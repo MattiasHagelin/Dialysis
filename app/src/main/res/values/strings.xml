@@ -10,4 +10,16 @@
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="add_entry">Add Entry</string>
+    
+    <!-- Button Text -->
+    <string name="text_sign_in">Sign in</string>
+
+    <!-- Icon description text -->
+    <string name="icon_medication_list">Medication list</string>
+    <string name="icon_arrow_back">Back arrow</string>
+    <string name="icon_menu">Menu</string>
+    <string name="icon_sign_out">Sign out</string>
+
+    
+    <string name="web_client_id">730837567360-6noifc0icatbh0s4bqoupo6kfgjs8fvd.apps.googleusercontent.com</string>
 </resources>

@@ -3,6 +3,8 @@ package com.math3249.dialysis.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.math3249.dialysis.data.model.DialysisEntry
+import com.math3249.dialysis.other.Constants
+import com.math3249.dialysis.other.DialogType
 import com.math3249.dialysis.repository.DialysisInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,6 +19,9 @@ class DialysisViewModel(
     private val _showDeleteDialog = MutableStateFlow<Boolean>(false)
     private val _showEditDialog = MutableStateFlow<Boolean>(false)
     private val _itemKey = MutableStateFlow<String>("")
+    private val _weightBefore = MutableStateFlow("")
+    private val _weightAfter = MutableStateFlow("")
+    private val _ultrafiltration = MutableStateFlow("")
 
 
     val entries = _entries.asStateFlow()
@@ -24,6 +29,9 @@ class DialysisViewModel(
     val showDeleteDialog = _showDeleteDialog.asStateFlow()
     val showEditDialog = _showEditDialog.asStateFlow()
     val itemKey = _itemKey.asStateFlow()
+    val weightBefore = _weightBefore.asStateFlow()
+    val weightAfter = _weightAfter.asStateFlow()
+    val ultrafiltration = _ultrafiltration.asStateFlow()
 
     init {
         getEntries()
@@ -72,19 +80,32 @@ class DialysisViewModel(
         }
     }
 
-    fun showAddDialog(show: Boolean) {
-        _showAddDialog.value = show
+//    fun showAddDialog(show: Boolean) {
+//        _showAddDialog.value = show
+//    }
+//
+//    fun showDeleteDialog(show: Boolean) {
+//        _showDeleteDialog.value = show
+//    }
+//
+//    fun showEditDialog(show: Boolean) {
+//        _showEditDialog.value = show
+//    }
+
+    fun showDialog(value: Boolean, type: DialogType) {
+        when (type) {
+            DialogType.ADD -> _showAddDialog.value = value
+            DialogType.EDIT -> _showAddDialog.value = value
+            DialogType.DELETE -> _showDeleteDialog.value = value
+        }
     }
 
-    fun showDeleteDialog(show: Boolean) {
-        _showDeleteDialog.value = show
-    }
-
-    fun showEditDialog(show: Boolean) {
-        _showEditDialog.value = show
-    }
-
-    fun setItemKey(key: String) {
-        _itemKey.value = key
+    fun setStringData(value: String, id: String) {
+        when (id) {
+            Constants.WEIGHT_BEFORE -> _weightBefore.value = value
+            Constants.WEIGHT_AFTER -> _weightAfter.value = value
+            Constants.ULTRAFILTRATION -> _ultrafiltration.value = value
+            Constants.KEY -> _itemKey.value = value
+        }
     }
 }
