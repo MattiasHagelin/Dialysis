@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "730837567360",
+    "firebase_url": "https://dialysis-8dae4-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "dialysis-8dae4",
+    "storage_bucket": "dialysis-8dae4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730837567360:android:5ffea5de8cd0af8fbf6365",
+        "android_client_info": {
+          "package_name": "com.math2349.dialysis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb0NAA1-vGrMELAf3rTmaBCXXlC-tKKJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730837567360:android:b0fcad50135c113ebf6365",
+        "android_client_info": {
+          "package_name": "com.math3249.dialysis"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb0NAA1-vGrMELAf3rTmaBCXXlC-tKKJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:730837567360:android:2c7cf13301f333afbf6365",
+        "android_client_info": {
+          "package_name": "com.math3249.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDb0NAA1-vGrMELAf3rTmaBCXXlC-tKKJU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
