@@ -29,7 +29,6 @@ fun SignInScreen(
             ).show()
         }
     }
-
     Box (
         modifier = Modifier
             .fillMaxSize()

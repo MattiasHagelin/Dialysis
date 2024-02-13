@@ -9,7 +9,6 @@ import com.math3249.dialysis.repository.DialysisInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class DialysisViewModel(
     private val repository: DialysisInterface
@@ -68,34 +67,33 @@ class DialysisViewModel(
         }
     }
 
-    fun addEntry(data: DialysisEntry) {
+    fun addEntry() {
         viewModelScope.launch {
             val entry = DialysisEntry(
-                key = UUID.randomUUID().toString(),
-                morningWeight = data.morningWeight,
-                eveningWeight = data.eveningWeight,
-                ultraFiltration = data.ultraFiltration
+                morningWeight = _weightAfter.value,
+                eveningWeight = _weightBefore.value,
+                ultraFiltration = _ultrafiltration.value
             )
             repository.addEntry(entry)
         }
     }
 
-//    fun showAddDialog(show: Boolean) {
-//        _showAddDialog.value = show
-//    }
-//
-//    fun showDeleteDialog(show: Boolean) {
-//        _showDeleteDialog.value = show
-//    }
-//
-//    fun showEditDialog(show: Boolean) {
-//        _showEditDialog.value = show
-//    }
+    fun setEditData(data: DialysisEntry){
+        _weightBefore.value = data.eveningWeight
+        _weightAfter.value = data.morningWeight
+        _ultrafiltration.value = data.ultraFiltration
+    }
+
+    fun clearData() {
+        _weightBefore.value = ""
+        _weightAfter.value = ""
+        _ultrafiltration.value = ""
+    }
 
     fun showDialog(value: Boolean, type: DialogType) {
         when (type) {
             DialogType.ADD -> _showAddDialog.value = value
-            DialogType.EDIT -> _showAddDialog.value = value
+            DialogType.EDIT -> _showEditDialog.value = value
             DialogType.DELETE -> _showDeleteDialog.value = value
         }
     }

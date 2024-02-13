@@ -24,12 +24,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.math3249.dialysis.data.model.Test
+import com.math3249.dialysis.data.model.GroupMember
 
 class NewDialysisDataEntry {
     @Composable
     fun EnterData(
-        data: Test,
+        data: GroupMember,
         onDismissRequest: () -> Unit,
         onConfirmation: () -> Unit ){
         var text by remember {
@@ -79,7 +79,7 @@ class NewDialysisDataEntry {
                         shape = RoundedCornerShape(15.dp),
                         onClick = {
                             onConfirmation()
-                            data.testname = text
+                            //data.testname = text
                         },
                         modifier = Modifier.
                             padding(10.dp)

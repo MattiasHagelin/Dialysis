@@ -11,9 +11,9 @@ import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 
-class DialysisRepository constructor(
+class DialysisRepository (
    private val database: FirebaseDatabase
-): DialysisInterface{
+): DialysisInterface {
     private val dialysisEntry = database.getReference(Constants.TABLE_DIALYSIS_ENTRIES)
     override suspend fun getDialysisEntries() = callbackFlow<Result<MutableList<DialysisEntry>>> {
         val entryListener = object : ValueEventListener{
@@ -29,11 +29,11 @@ class DialysisRepository constructor(
                 this@callbackFlow.trySendBlocking(Result.failure(error.toException()))
             }
         }
-        database.getReference("dialysis_entries")
+        database.getReference(Constants.TABLE_DIALYSIS_ENTRIES)
             .addValueEventListener(entryListener)
 
         awaitClose {
-            database.getReference("dialysis_entries")
+            database.getReference(Constants.TABLE_DIALYSIS_ENTRIES)
                 .removeEventListener(entryListener)
         }
     }
@@ -51,7 +51,16 @@ class DialysisRepository constructor(
     }
 
     override suspend fun addEntry(data: DialysisEntry) {
-        dialysisEntry.child(data.key).setValue(data)
+        val key = dialysisEntry.push().key
+        if (key != null) {
+            dialysisEntry.child(key).setValue(DialysisEntry(
+                key = key,
+                morningWeight = data.morningWeight,
+                eveningWeight = data.eveningWeight,
+                ultraFiltration = data.ultraFiltration,
+                date = data.date
+            ))
+        }
     }
 
 }

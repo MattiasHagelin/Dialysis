@@ -10,25 +10,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
+import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.ui.components.DialysisAppBar
-import com.math3249.dialysis.ui.components.DialysisScreen
 
 @Composable
 fun MedicationListScreen(
     navController: NavHostController,
     title: String,
+    canNavigateBack: Boolean,
     onSignOut: () -> Unit,
+    navigateUp: () ->Unit
 
 ) {
     Scaffold (
         topBar = {
             DialysisAppBar(
                 navController = navController,
-                canNavigateBack = false,
-                navigateUp = { /*TODO*/ },
+                canNavigateBack = canNavigateBack,
+                navigateUp = navigateUp,
                 title = title,
                 onSignOut = onSignOut,
-                currentLocation = DialysisScreen.MedicationList
+                currentLocation = Constants.MEDICATION_LIST,
+                onReset = {}
             )
         }
     ){ padding ->

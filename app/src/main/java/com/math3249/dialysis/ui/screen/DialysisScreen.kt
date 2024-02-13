@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -29,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,7 +43,6 @@ import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.other.DialogType
 import com.math3249.dialysis.ui.components.DialysisAppBar
 import com.math3249.dialysis.ui.viewmodel.DialysisViewModel
-import com.math3249.dialysis.ui.components.DialysisScreen
 
 @Composable
 fun DialysisScreen(
@@ -63,15 +60,12 @@ fun DialysisScreen(
         topBar = {
             DialysisAppBar(
                 navController = navController,
-                canNavigateBack = false,
-                navigateUp = { /*TODO*/ },
+                canNavigateBack = true,
+                navigateUp = { navController.popBackStack() },
                 onSignOut = onSignOut,
                 title = "Dialysis",
-                currentLocation = DialysisScreen.Dialysis,
-                modifier = Modifier
-                    .background(Color.LightGray)
-                    .fillMaxWidth()
-                    .shadow(1.dp, RectangleShape)
+                currentLocation = Constants.DIALYSIS,
+                onReset = {}
             )
         },
         floatingActionButton = {
@@ -115,8 +109,8 @@ fun DialysisScreen(
             val data = listData.first{item ->
                 viewModel.itemKey.collectAsStateWithLifecycle().value == item.key
             }
+            viewModel.setEditData(data)
             EnterNewDataDialog(
-                data = data,
                 onDismissRequest = {
                     viewModel.showDialog(false, DialogType.EDIT)
                 },
@@ -145,14 +139,13 @@ fun DialysisScreen(
                 })
         }
         if (viewModel.showAddDialog.collectAsStateWithLifecycle().value) {
-            val data = DialysisEntry("")
+            viewModel.clearData()
             EnterNewDataDialog(
-                data = data,
                 onDismissRequest = {
                     viewModel.showDialog(false, DialogType.ADD)
                 },
                 onConfirmation = {
-                    viewModel.addEntry(data)
+                    viewModel.addEntry()
                     viewModel.showDialog(false, DialogType.ADD)
                 },
                 title = stringResource(R.string.new_entry),
@@ -204,7 +197,6 @@ fun ConfirmDialog(
 
 @Composable
 fun EnterNewDataDialog(
-    data: DialysisEntry,
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     title: String,
@@ -244,9 +236,12 @@ fun EnterNewDataDialog(
                     .padding(1.dp)
             )
             OutlinedTextField(
-                placeholder = {
+                label = {
                     Text(stringResource(R.string.weight_after))
                 },
+//                placeholder = {
+//                    Text(stringResource(R.string.weight_after))
+//                },
                 value = viewModel.weightAfter.collectAsStateWithLifecycle().value,
                 onValueChange = {
                     viewModel.setStringData(it, Constants.WEIGHT_AFTER)
@@ -270,9 +265,6 @@ fun EnterNewDataDialog(
                 OutlinedButton(
                     shape = RoundedCornerShape(15.dp),
                     onClick = {
-                        data.morningWeight = viewModel.weightAfter.value
-                        data.eveningWeight = viewModel.weightBefore.value
-                        data.ultraFiltration = viewModel.ultrafiltration.value
                         onConfirmation()
                     },
                     modifier = Modifier.padding(end = 5.dp)
@@ -313,9 +305,8 @@ fun ListCard(
                     .weight(2f)
             )
             IconButton(
-                onClick = {
-                    editAction()
-                }) {
+                onClick = editAction
+            ) {
                 Icon(
                     modifier = Modifier
                         .weight(1f)
@@ -326,9 +317,7 @@ fun ListCard(
                 )
             }
             IconButton(
-                onClick = {
-                    deleteAction()
-                }
+                onClick = deleteAction
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Delete,
