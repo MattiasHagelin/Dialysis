@@ -3,12 +3,12 @@ package com.math3249.dialysis.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.math3249.dialysis.BaseApp
-import com.math3249.dialysis.data.repository.repository_interface.UserInterface
+import com.math3249.dialysis.data.repository.repository_interface.IUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 class UserViewModel(
-    private val repository: UserInterface
+    private val repository: IUser
 ): ViewModel() {
 
     private val _groupKey = MutableStateFlow("")

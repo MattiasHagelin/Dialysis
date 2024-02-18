@@ -14,7 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.AddCircleOutline
+import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Refresh
@@ -64,45 +64,54 @@ fun FluidBalanceScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.secondaryContainer)
     ) {
-        OutlinedNumberField(
-            value = viewModel.consumedFluid.collectAsStateWithLifecycle().value,
-            label = { Text(stringResource(R.string.header_consumed_fluid)) },
-            onValueChanged = { viewModel.setConsumedFluid(it) },
-            singleLine = true,
-            onDone = {
-                viewModel.addConsumedFluid(viewModel.consumedFluid.value)
-                viewModel.setConsumedFluid("")
-                focusManager.clearFocus()
-            },
-            trailingIcon = {
-                Icon(
-                    imageVector = Icons.Outlined.AddCircleOutline,
-                    contentDescription = stringResource(R.string.add),
-                    modifier = Modifier.clickable {
+        Column (
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxSize()
+        ){
+            Box (
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, top = 2.dp, end = 15.dp)
+                    .shadow(10.dp, RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+            ) {
+                OutlinedNumberField(
+                    value = viewModel.consumedFluid.collectAsStateWithLifecycle().value,
+                    label = { Text(stringResource(R.string.header_consumed_fluid)) },
+                    onValueChanged = { viewModel.setConsumedFluid(it) },
+                    singleLine = true,
+                    onDone = {
                         viewModel.addConsumedFluid(viewModel.consumedFluid.value)
                         viewModel.setConsumedFluid("")
                         focusManager.clearFocus()
-                    }
-                ) },
-            modifier = Modifier
-                .focusRequester(focusRequester)
-                .padding(top = 100.dp)
-                .align(Alignment.TopCenter)
-                .background(
-                    MaterialTheme.colorScheme.primaryContainer,
-                    RoundedCornerShape(8.dp)
+                    },
+                    trailingIcon = {
+                        Icon(
+                            imageVector = Icons.Outlined.Add,
+                            contentDescription = stringResource(R.string.add),
+                            modifier = Modifier.clickable {
+                                viewModel.addConsumedFluid(viewModel.consumedFluid.value)
+                                viewModel.setConsumedFluid("")
+                                focusManager.clearFocus()
+                            }
+                        ) },
+                    modifier = Modifier
+                        .focusRequester(focusRequester)
+                        .background(
+                            MaterialTheme.colorScheme.primaryContainer,
+                            RoundedCornerShape(8.dp)
+                        )
+                        .fillMaxWidth()
                 )
-        )
-        Column (
-            modifier = Modifier
-                .align(Alignment.Center)
-        ){
+            }
+
             TextCard(
                 header = stringResource(R.string.header_fluid_limit),
                 content = fluidBalance.fluidLimit.toString(),
                 modifier = Modifier
-                    .width(250.dp)
-                    .padding(start = 5.dp, top = 2.dp, end = 5.dp)
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, top = 2.dp, end = 15.dp)
                     .shadow(10.dp, RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
                     .clickable {
@@ -114,8 +123,8 @@ fun FluidBalanceScreen(
                 header = stringResource(R.string.header_consumed_fluid),
                 content = fluidBalance.consumedFluid.toString(),
                 modifier = Modifier
-                    .width(250.dp)
-                    .padding(start = 5.dp, top = 2.dp, end = 5.dp)
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, top = 2.dp, end = 15.dp)
                     .shadow(10.dp, RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
             )
@@ -123,8 +132,8 @@ fun FluidBalanceScreen(
                 header = stringResource(R.string.header_remaining_fluid),
                 content = (fluidBalance.fluidLimit.minus(fluidBalance.consumedFluid)).toString(),
                 modifier = Modifier
-                    .width(250.dp)
-                    .padding(start = 5.dp, top = 2.dp, end = 5.dp)
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, top = 2.dp, end = 15.dp)
                     .shadow(10.dp, RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
             )

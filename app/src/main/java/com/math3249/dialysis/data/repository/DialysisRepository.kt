@@ -7,7 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.math3249.dialysis.BaseApp
 import com.math3249.dialysis.data.model.DialysisEntry
-import com.math3249.dialysis.data.repository.repository_interface.DialysisInterface
+import com.math3249.dialysis.data.repository.repository_interface.IDialysis
 import com.math3249.dialysis.other.Constants
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -16,7 +16,7 @@ import java.time.LocalDate
 
 class DialysisRepository (
    database: FirebaseDatabase
-): DialysisInterface {
+): IDialysis {
     private val group = database.getReference(Constants.TABLE_GROUP)
     override suspend fun getDialysisEntries(groupKey: String) = callbackFlow<Result<MutableList<DialysisEntry>>> {
         val entryListener = object : ValueEventListener{

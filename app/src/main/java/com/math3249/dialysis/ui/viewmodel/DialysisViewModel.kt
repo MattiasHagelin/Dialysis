@@ -7,13 +7,13 @@ import com.math3249.dialysis.data.model.DialysisEntry
 import com.math3249.dialysis.data.model.DialysisProgram
 import com.math3249.dialysis.other.BooleanType
 import com.math3249.dialysis.other.Constants
-import com.math3249.dialysis.data.repository.repository_interface.DialysisInterface
+import com.math3249.dialysis.data.repository.repository_interface.IDialysis
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class DialysisViewModel(
-    private val repository: DialysisInterface
+    private val repository: IDialysis
 ): ViewModel() {
     private val _entries = MutableStateFlow<MutableList<DialysisEntry>?>(mutableListOf())
     private val _showAddDialog = MutableStateFlow<Boolean>(false)

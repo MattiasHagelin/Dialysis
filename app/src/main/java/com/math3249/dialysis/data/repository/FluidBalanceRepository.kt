@@ -7,7 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.data.model.GroupMember
-import com.math3249.dialysis.data.repository.repository_interface.FluidBalanceInterface
+import com.math3249.dialysis.data.repository.repository_interface.IFluidBalance
 import com.math3249.dialysis.other.Constants
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.callbackFlow
 
 class FluidBalanceRepository (
     private val database: FirebaseDatabase
-): FluidBalanceInterface {
+): IFluidBalance {
     private val group = database.getReference(Constants.TABLE_GROUP)//.child(BaseApp.groupKey).child(Constants.TABLE_FLUID_BALANCE)
     private val groupMember = database.getReference(Constants.TABLE_GROUP_MEMBER)
 

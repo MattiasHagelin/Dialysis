@@ -5,7 +5,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
 import com.math3249.dialysis.data.repository.FluidBalanceRepository
-import com.math3249.dialysis.data.repository.repository_interface.FluidBalanceInterface
+import com.math3249.dialysis.data.repository.repository_interface.IFluidBalance
 import com.math3249.dialysis.di.di_interface.IFluidBalanceModule
 import com.math3249.dialysis.other.Constants
 
@@ -15,7 +15,7 @@ class FluidBalanceModule(
     override val database: FirebaseDatabase by lazy {
         Firebase.database(Constants.DATABASE_BASE_URL)
     }
-    override val fluidBalanceRepository: FluidBalanceInterface by lazy {
+    override val fluidBalanceRepository: IFluidBalance by lazy {
         FluidBalanceRepository(database)
     }
 }

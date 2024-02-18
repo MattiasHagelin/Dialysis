@@ -6,14 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.math3249.dialysis.BaseApp
 import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.data.model.GroupMember
-import com.math3249.dialysis.data.repository.repository_interface.FluidBalanceInterface
+import com.math3249.dialysis.data.repository.repository_interface.IFluidBalance
 import com.math3249.dialysis.data.repository.GroupMemberCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FluidBalanceViewModel(
-    private val repository: FluidBalanceInterface
+    private val repository: IFluidBalance
 ) :ViewModel(){
     private val _fluidBalance = MutableStateFlow<FluidBalance?>(FluidBalance())
     private val _editFluidLimit = MutableStateFlow("")

@@ -4,7 +4,7 @@ import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.data.repository.GroupMemberCallback
 import kotlinx.coroutines.flow.Flow
 
-interface FluidBalanceInterface {
+interface IFluidBalance {
     suspend fun getFluidBalance(groupKey: String): Flow<Result<FluidBalance>>
     suspend fun addConsumedFluid(data: FluidBalance, groupKey: String)
     suspend fun resetFluidBalance(groupKey: String)
