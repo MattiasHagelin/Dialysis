@@ -49,7 +49,7 @@ import com.math3249.dialysis.data.model.DialysisProgram
 import com.math3249.dialysis.other.BooleanType
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.ui.components.DialysisDropDownMenu
-import com.math3249.dialysis.ui.components.DialysisProgramBackgroundBrush
+import com.math3249.dialysis.ui.components.dialysisProgramBackgroundBrush
 import com.math3249.dialysis.ui.components.OutlinedNumberField
 import com.math3249.dialysis.ui.components.SelectTextField
 import com.math3249.dialysis.ui.components.model.MenuItemData
@@ -359,7 +359,7 @@ fun EnterNewDataDialog(
                             },
                             modifier = Modifier
                                 .background(
-                                    brush = DialysisProgramBackgroundBrush(
+                                    brush = dialysisProgramBackgroundBrush(
                                         isVerticalGradient = false,
                                         colors = program.dialysisFluids.map {
                                             Color(it.toColorInt())
@@ -443,7 +443,7 @@ fun ListCard(
                     .width(40.dp)
                     .height(20.dp)
                     .background(
-                        brush = DialysisProgramBackgroundBrush(
+                        brush = dialysisProgramBackgroundBrush(
                             isVerticalGradient = false,
                             colors = item.program!!.dialysisFluids.map {
                                 Color(it.toColorInt())

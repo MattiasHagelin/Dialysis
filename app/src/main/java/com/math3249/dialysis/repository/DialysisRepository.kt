@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import java.time.LocalDate
 
 class DialysisRepository (
-   private val database: FirebaseDatabase
+   database: FirebaseDatabase
 ): DialysisInterface {
     private val group = database.getReference(Constants.TABLE_GROUP)
     override suspend fun getDialysisEntries(groupKey: String) = callbackFlow<Result<MutableList<DialysisEntry>>> {

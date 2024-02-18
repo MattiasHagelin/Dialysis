@@ -29,7 +29,7 @@ class FluidBalanceRepository (
                 this@callbackFlow.trySendBlocking(Result.failure(error.toException()))
             }
         }
-            group.child(groupKey).child(Constants.FLUID_BALANCE).addValueEventListener(entryListener)
+            group.child(groupKey).child(Constants.TABLE_FLUID_BALANCE).addValueEventListener(entryListener)
 
         awaitClose {
             group.removeEventListener(entryListener)
@@ -37,18 +37,18 @@ class FluidBalanceRepository (
     }
 
     override suspend fun addConsumedFluid(data: FluidBalance, groupKey: String) {
-        group.child(groupKey).child(Constants.FLUID_BALANCE).setValue(data)
+        group.child(groupKey).child(Constants.TABLE_FLUID_BALANCE).setValue(data)
     }
 
     override suspend fun resetFluidBalance(groupKey: String) {
-        group.child(groupKey).child(Constants.FLUID_BALANCE).setValue(FluidBalance(
+        group.child(groupKey).child(Constants.TABLE_FLUID_BALANCE).setValue(FluidBalance(
             fluidLimit = 650,
             consumedFluid = 0
         ))
     }
 
     override suspend fun updateFluidLimit(data: FluidBalance, groupKey: String) {
-        group.child(groupKey).child(Constants.FLUID_BALANCE).setValue(data)
+        group.child(groupKey).child(Constants.TABLE_FLUID_BALANCE).setValue(data)
     }
 
     override suspend fun getGroupKey(
