@@ -4,18 +4,15 @@ import android.content.Context
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
+import com.math3249.dialysis.data.repository.UserRepository
+import com.math3249.dialysis.data.repository.repository_interface.UserInterface
+import com.math3249.dialysis.di.di_interface.IUserModule
 import com.math3249.dialysis.other.Constants
-import com.math3249.dialysis.repository.UserInterface
-import com.math3249.dialysis.repository.UserRepository
 
-interface UserModule {
-    val database: FirebaseDatabase
-    val userRepository: UserInterface
-}
-
-class UserModuleImpl(
+class UserModule(
     private val appContext: Context
-): UserModule{
+): IUserModule
+{
     override val database: FirebaseDatabase by lazy {
         Firebase.database(Constants.DATABASE_BASE_URL)
     }

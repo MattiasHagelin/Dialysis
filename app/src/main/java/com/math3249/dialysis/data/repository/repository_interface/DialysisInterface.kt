@@ -1,4 +1,4 @@
-package com.math3249.dialysis.repository
+package com.math3249.dialysis.data.repository.repository_interface
 
 import com.math3249.dialysis.data.model.DialysisEntry
 import kotlinx.coroutines.flow.Flow

@@ -3,7 +3,7 @@ package com.math3249.dialysis.ui.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.math3249.dialysis.BaseApp
-import com.math3249.dialysis.repository.UserInterface
+import com.math3249.dialysis.data.repository.repository_interface.UserInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 

@@ -1,4 +1,4 @@
-package com.math3249.dialysis.repository
+package com.math3249.dialysis.data.repository
 
 import android.util.Log
 import com.google.firebase.database.DataSnapshot
@@ -7,6 +7,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.values
 import com.math3249.dialysis.data.model.GroupMember
+import com.math3249.dialysis.data.repository.repository_interface.UserInterface
 import com.math3249.dialysis.other.Constants
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking

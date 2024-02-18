@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.math3249.dialysis.BaseApp
 import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.data.model.GroupMember
-import com.math3249.dialysis.repository.FluidBalanceInterface
-import com.math3249.dialysis.repository.GroupMemberCallback
+import com.math3249.dialysis.data.repository.repository_interface.FluidBalanceInterface
+import com.math3249.dialysis.data.repository.GroupMemberCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

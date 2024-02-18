@@ -1,6 +1,7 @@
-package com.math3249.dialysis.repository
+package com.math3249.dialysis.data.repository.repository_interface
 
 import com.math3249.dialysis.data.model.FluidBalance
+import com.math3249.dialysis.data.repository.GroupMemberCallback
 import kotlinx.coroutines.flow.Flow
 
 interface FluidBalanceInterface {

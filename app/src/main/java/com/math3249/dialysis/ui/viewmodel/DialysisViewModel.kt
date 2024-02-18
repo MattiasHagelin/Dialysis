@@ -7,7 +7,7 @@ import com.math3249.dialysis.data.model.DialysisEntry
 import com.math3249.dialysis.data.model.DialysisProgram
 import com.math3249.dialysis.other.BooleanType
 import com.math3249.dialysis.other.Constants
-import com.math3249.dialysis.repository.DialysisInterface
+import com.math3249.dialysis.data.repository.repository_interface.DialysisInterface
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
