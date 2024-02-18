@@ -3,26 +3,41 @@
     <!-- Screen name -->
     <string name="screen_fluid_balance">Fluid balance</string>
 
-    <string name="weight_after">Weight After</string>
-    <string name="weight_before">Weight Before</string>
-    <string name="ultrafiltration">Ultrafiltration</string>
-    <string name="new_entry">New Entry</string>
+    <string name="weight_after">Weight after</string>
+    <string name="weight_before">Weight before</string>
+    <string name="ultrafiltration" translatable="false">Ultrafiltration</string>
+    <string name="new_entry">New entry</string>
+    <string name="update">Update</string>
     <string name="edit">Edit</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
     <string name="add_entry">Add Entry</string>
     <string name="add">Add</string>
+    <string name="logout">Logout</string>
+    <string name="login">Login</string>
+    <string name="settings">Settings</string>
+    <string name="reset">Reset</string>
 
-    <!-- Hint Text -->
-    <string name="hint_consumed_fluid">Consumed fluid</string>
+    <!-- Header Text -->
+    <string name="header_fluid_limit">Fluid limit</string>
+    <string name="header_consumed_fluid">Consumed fluid</string>
+    <string name="header_remaining_fluid">Remaining fluid</string>
+    <string name="header_update_fluid_limit">Update fluid limit</string>
+    <string name="header_select_program">Select program</string>
 
     <!-- Button Text -->
     <string name="text_sign_in">Sign in</string>
 
+    <!-- Program names -->
+    <string name="yellow_green_13">YellowGreen 13h</string>
+    <string name="yellow_13">Yellow 13h</string>
+    <string name="yellow_green_16">YellowGreen 16h</string>
+    <string name="yellow_16">Yellow 16h</string>
+
     <!-- Icon description text -->
     <string name="icon_medication_list">Medication list</string>
-    <string name="icon_arrow_back">Back arrow</string>
+    <string name="icon_arrow_back" translatable="false">Back arrow</string>
     <string name="icon_menu">Menu</string>
     <string name="icon_sign_out">Sign out</string>
     <string name="icon_sign_in">Sign in</string>
@@ -30,6 +45,13 @@
     <string name="icon_fluid_balance">Fluid balance</string>
     <string name="icon_settings">Settings</string>
 
-    
+    <!-- Hint Text -->
+    <string name="hint_consumed_fluid">Consumed fluid</string>
+
+    <!-- -->
+    <string name="dialog_confirm_delete">Really delete?</string>
+    <string name="entry_deleted_confirmation">Entry deleted.</string>
+
+
     <string name="web_client_id">730837567360-6noifc0icatbh0s4bqoupo6kfgjs8fvd.apps.googleusercontent.com</string>
 </resources>

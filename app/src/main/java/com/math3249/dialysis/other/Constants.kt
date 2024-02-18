@@ -9,10 +9,11 @@ object Constants {
     const val TABLE_GROUP = "group"
 
     //Dialysis data ids
-    const val WEIGHT_BEFORE = "weightbefore"
-    const val WEIGHT_AFTER = "weightafter"
+    const val WEIGHT_BEFORE = "weightBefore"
+    const val WEIGHT_AFTER = "weightAfter"
     const val ULTRAFILTRATION = "ultrafiltration"
     const val KEY = "key"
+    const val SELECTED_ITEM = "selectedItem"
 
     //Navigation locations
     const val DIALYSIS = "dialysis"
@@ -22,5 +23,7 @@ object Constants {
     const val SETTINGS = "settings"
     const val TABS = "tabs"
 
-
+    //Color
+    const val YELLOW = "#FFFF00"
+    const val GREEN = "#008000"
 }

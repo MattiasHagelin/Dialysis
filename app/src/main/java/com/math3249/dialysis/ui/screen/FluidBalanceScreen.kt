@@ -15,7 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AddCircleOutline
+import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Menu
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,6 +41,7 @@ import com.math3249.dialysis.R
 import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.ui.components.DialysisDropDownMenu
 import com.math3249.dialysis.ui.components.OutlinedNumberField
+import com.math3249.dialysis.ui.components.model.MenuItemData
 import com.math3249.dialysis.ui.viewmodel.FluidBalanceViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -62,7 +66,7 @@ fun FluidBalanceScreen(
     ) {
         OutlinedNumberField(
             value = viewModel.consumedFluid.collectAsStateWithLifecycle().value,
-            label = { Text(stringResource(R.string.hint_consumed_fluid)) },
+            label = { Text(stringResource(R.string.header_consumed_fluid)) },
             onValueChanged = { viewModel.setConsumedFluid(it) },
             singleLine = true,
             onDone = {
@@ -94,10 +98,10 @@ fun FluidBalanceScreen(
                 .align(Alignment.Center)
         ){
             TextCard(
-                header = "Fluid limit",
+                header = stringResource(R.string.header_fluid_limit),
                 content = fluidBalance.fluidLimit.toString(),
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(250.dp)
                     .padding(start = 5.dp, top = 2.dp, end = 5.dp)
                     .shadow(10.dp, RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
@@ -107,19 +111,19 @@ fun FluidBalanceScreen(
                     }
             )
             TextCard(
-                header = "Consumed fluid",
+                header = stringResource(R.string.header_consumed_fluid),
                 content = fluidBalance.consumedFluid.toString(),
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(250.dp)
                     .padding(start = 5.dp, top = 2.dp, end = 5.dp)
                     .shadow(10.dp, RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
             )
             TextCard(
-                header = "Remaining fluid",
+                header = stringResource(R.string.header_remaining_fluid),
                 content = (fluidBalance.fluidLimit.minus(fluidBalance.consumedFluid)).toString(),
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(250.dp)
                     .padding(start = 5.dp, top = 2.dp, end = 5.dp)
                     .shadow(10.dp, RoundedCornerShape(8.dp))
                     .background(MaterialTheme.colorScheme.primaryContainer)
@@ -138,19 +142,27 @@ fun FluidBalanceScreen(
                     .padding(top = 20.dp, end = 20.dp, bottom = 20.dp)
             ) {
                 Icon(imageVector = Icons.Outlined.Menu, contentDescription = null)
-                DialysisDropDownMenu(
-                    expanded = expanded,
+                FluidBalanceMenu(
+                    expanded = expanded.collectAsStateWithLifecycle().value,
+                    onDismiss = {
+                        expanded.value = false
+                    },
                     onSignOut = {
                         onSignOut()
+                        expanded.value = false
                     },
-                    onSettings = navigateSettings
+                    navigateSettings = {},
+                    reset = {
+                        viewModel.reset()
+                        expanded.value = false
+                    }
                 )
             }
         }
     }
     if (viewModel.showDialog.collectAsStateWithLifecycle().value)
         EditDialog(
-            header = "Update Fluid Limit",
+            header = stringResource(R.string.header_update_fluid_limit),
             value = viewModel.editFluidLimit.collectAsStateWithLifecycle().value,
             onValueChanged =
             {
@@ -176,6 +188,38 @@ fun FluidBalanceScreen(
                     shape = RoundedCornerShape(8.dp)
                 )
         )
+}
+
+@Composable
+private fun FluidBalanceMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onSignOut: () -> Unit,
+    navigateSettings: () -> Unit,
+    reset: () -> Unit
+) {
+    val menuItems = listOf(
+        MenuItemData(
+            title = stringResource(R.string.reset),
+            icon = Icons.Outlined.Refresh,
+            onClick = reset
+        ),
+        MenuItemData(
+            title = stringResource(R.string.settings),
+            icon = Icons.Outlined.Settings,
+            onClick = navigateSettings
+        ),
+        MenuItemData(
+            title = stringResource(R.string.logout),
+            icon = Icons.Outlined.Logout,
+            onClick = onSignOut
+        )
+    )
+    DialysisDropDownMenu(
+        expanded = expanded,
+        onDismiss = onDismiss,
+        menuItems = menuItems
+    )
 }
 
 @Composable
@@ -261,7 +305,7 @@ fun EditDialog(
                         .weight(1f)
                         .padding(start = 10.dp, end = 5.dp)
                 ) {
-                    Text(stringResource(R.string.edit))
+                    Text(stringResource(R.string.update))
                 }
 
                 OutlinedButton(

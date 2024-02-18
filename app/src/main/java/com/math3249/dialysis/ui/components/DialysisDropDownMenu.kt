@@ -4,48 +4,34 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Logout
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.math3249.dialysis.ui.components.model.MenuItemData
 
 @Composable
 fun DialysisDropDownMenu(
-    expanded: MutableStateFlow<Boolean>,
-    onSignOut: () -> Unit,
-    onSettings: () -> Unit
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    menuItems: List<MenuItemData>
 ) {
     DropdownMenu(
-        expanded = expanded.collectAsState().value,
-        onDismissRequest = { expanded.value = false }
-
+        expanded = expanded,
+        onDismissRequest = onDismiss,
     ) {
-        MenuItem(
-            title = "Settings",
-            icon = Icons.Outlined.Settings,
-            onClick = {
-                expanded.value = false
-                onSettings()
-            }
-        )
-        MenuItem(
-            title = "Logout",
-            icon = Icons.Outlined.Logout,
-            onClick = {
-                expanded.value = false
-                onSignOut()
-            }
-        )
+        menuItems.forEach { item ->
+            MenuItem(
+                title = item.title,
+                icon = item.icon,
+                onClick = item.onClick
+                )
+        }
     }
 }
 

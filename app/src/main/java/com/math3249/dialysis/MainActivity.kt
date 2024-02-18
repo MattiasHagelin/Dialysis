@@ -29,7 +29,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -166,19 +165,19 @@ class MainActivity : ComponentActivity() {
                                                 onSignOut = {
                                                     signOut(navController)
                                                 },
-                                                navController = navController,
+//                                                navController = navController,
                                                 modifier = Modifier.fillMaxWidth()
                                             )
                                         }
                                         2 -> {
                                             MedicationListScreen(
-                                                navController = navController,
-                                                title = stringResource(R.string.icon_medication_list),
-                                                onSignOut = {
-                                                    signOut(navController)
-                                                },
-                                                navigateUp = { navController.popBackStack() },
-                                                canNavigateBack = true
+//                                                navController = navController,
+//                                                title = stringResource(R.string.icon_medication_list),
+//                                                onSignOut = {
+//                                                    signOut(navController)
+//                                                },
+//                                                navigateUp = { navController.popBackStack() },
+//                                                canNavigateBack = true
                                             )
                                         }
                                     }
@@ -214,20 +213,20 @@ class MainActivity : ComponentActivity() {
                     onSignOut = {
                         signOut(navController)
                     },
-                    navController = navController,
+//                    navController = navController,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
             composable(Constants.MEDICATION_LIST) {
                 MedicationListScreen(
-                    navController = navController,
-                    title = stringResource(R.string.icon_medication_list),
-                    onSignOut = {
-                        signOut(navController)
-                    },
-                    navigateUp = { navController.popBackStack() },
-                    canNavigateBack = true
+//                    navController = navController,
+//                    title = stringResource(R.string.icon_medication_list),
+//                    onSignOut = {
+//                        signOut(navController)
+//                    },
+//                    navigateUp = { navController.popBackStack() },
+//                    canNavigateBack = true
                 )
             }
 

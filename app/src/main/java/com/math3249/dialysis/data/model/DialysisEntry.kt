@@ -4,8 +4,9 @@ import java.time.LocalDate
 
 data class DialysisEntry(
     val key : String = "",
-    var morningWeight: String = "",
-    var eveningWeight: String = "",
+    var weightAfter: String = "",
+    var weightBefore: String = "",
     var ultraFiltration: String = "",
-    var date: String = LocalDate.now().toString()
+    var date: String = "",
+    var program: DialysisProgram? = null
 )
