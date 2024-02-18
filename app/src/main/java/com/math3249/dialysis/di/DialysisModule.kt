@@ -8,13 +8,13 @@ import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.repository.DialysisInterface
 import com.math3249.dialysis.repository.DialysisRepository
 
-interface AppModule {
+interface DialysisModule {
     val database: FirebaseDatabase
     val dialysisRepository: DialysisInterface
 }
-class AppModuleImpl(
+class DialysisModuleImpl(
     private val  appContext : Context
-): AppModule {
+): DialysisModule {
     override val database: FirebaseDatabase by lazy {
         Firebase.database(Constants.DATABASE_BASE_URL)
     }
