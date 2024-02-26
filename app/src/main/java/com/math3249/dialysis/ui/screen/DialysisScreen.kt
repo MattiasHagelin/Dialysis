@@ -49,9 +49,9 @@ import com.math3249.dialysis.data.model.DialysisProgram
 import com.math3249.dialysis.other.BooleanType
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.ui.components.DialysisDropDownMenu
-import com.math3249.dialysis.ui.components.dialysisProgramBackgroundBrush
 import com.math3249.dialysis.ui.components.OutlinedNumberField
 import com.math3249.dialysis.ui.components.SelectTextField
+import com.math3249.dialysis.ui.components.dialysisProgramBackgroundBrush
 import com.math3249.dialysis.ui.components.model.MenuItemData
 import com.math3249.dialysis.ui.viewmodel.DialysisViewModel
 
@@ -335,6 +335,7 @@ fun EnterNewDataDialog(
             )
             SelectTextField(
                 value = viewModel.selectedValue.collectAsStateWithLifecycle().value,
+                label = stringResource(R.string.header_select_program),
                 expanded = viewModel.selectExpanded.collectAsStateWithLifecycle().value,
                 onExpandedChange = {
                     viewModel.setBooleanData(it, BooleanType.SELECT_EXPANDED)

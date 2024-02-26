@@ -9,6 +9,7 @@ import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.data.model.GroupMember
 import com.math3249.dialysis.data.repository.repository_interface.IFluidBalance
 import com.math3249.dialysis.other.Constants
+import com.math3249.dialysis.other.IGroupMemberCallback
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.callbackFlow
 class FluidBalanceRepository (
     private val database: FirebaseDatabase
 ): IFluidBalance {
-    private val group = database.getReference(Constants.TABLE_GROUP)//.child(BaseApp.groupKey).child(Constants.TABLE_FLUID_BALANCE)
+    private val group = database.getReference(Constants.TABLE_GROUP)
     private val groupMember = database.getReference(Constants.TABLE_GROUP_MEMBER)
 
     override suspend fun getFluidBalance(groupKey: String) = callbackFlow<Result<FluidBalance>> {
@@ -54,7 +55,7 @@ class FluidBalanceRepository (
 
     override suspend fun getGroupKey(
         user: String,
-        groupMemberCallback: GroupMemberCallback
+        groupMemberCallback: IGroupMemberCallback
     ) {
          groupMember.child(user).get()
             .addOnSuccessListener {
@@ -73,8 +74,4 @@ class FluidBalanceRepository (
     private fun logger(message: String) {
         Log.w("MathLogger", message)
     }
-}
-
-interface GroupMemberCallback {
-    fun onCallback(value: GroupMember)
 }

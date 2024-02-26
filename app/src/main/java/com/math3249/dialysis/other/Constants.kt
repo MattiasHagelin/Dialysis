@@ -7,6 +7,7 @@ object Constants {
     const val TABLE_FLUID_BALANCE = "fluid_balance"
     const val TABLE_GROUP_MEMBER = "group_member"
     const val TABLE_GROUP = "group"
+    const val TABLE_MEDICATIONS = "medications"
 
     //Dialysis data ids
     const val WEIGHT_BEFORE = "weightBefore"
@@ -19,6 +20,7 @@ object Constants {
     const val DIALYSIS = "dialysis"
     const val SIGN_IN = "sign_in"
     const val MEDICATION_LIST = "medication_list"
+    const val MEDICATION_ADD = "addMedication"
     const val FLUID_BALANCE = "fluid_balance"
     const val SETTINGS = "settings"
     const val TABS = "tabs"

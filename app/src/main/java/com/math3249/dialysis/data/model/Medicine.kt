@@ -1,6 +1,7 @@
 package com.math3249.dialysis.data.model
 
 data class Medicine(
+    val key: String,
     val name: String,
     val dose: String,
     val time: String,

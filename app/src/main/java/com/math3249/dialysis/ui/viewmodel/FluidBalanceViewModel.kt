@@ -7,7 +7,7 @@ import com.math3249.dialysis.BaseApp
 import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.data.model.GroupMember
 import com.math3249.dialysis.data.repository.repository_interface.IFluidBalance
-import com.math3249.dialysis.data.repository.GroupMemberCallback
+import com.math3249.dialysis.other.IGroupMemberCallback
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -35,7 +35,7 @@ class FluidBalanceViewModel(
 
     private fun getGroupKey() {
         viewModelScope.launch {
-            repository.getGroupKey(BaseApp.userData.userId, object: GroupMemberCallback {
+            repository.getGroupKey(BaseApp.userData.userId, object: IGroupMemberCallback {
                 override fun onCallback(value: GroupMember) {
                     _groupKey.value = value
                     if (BaseApp.groupKey.isBlank() && value.groupId.isNotBlank())

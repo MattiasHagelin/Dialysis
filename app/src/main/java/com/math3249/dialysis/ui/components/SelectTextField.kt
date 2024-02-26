@@ -24,14 +24,13 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import com.math3249.dialysis.R
 
 @Composable
 fun SelectTextField(
     value: String,
+    label: String,
     expanded: Boolean,
     onExpandedChange: (Boolean) -> Unit,
     onValueChange: (String) -> Unit,
@@ -59,7 +58,7 @@ fun SelectTextField(
                         onExpandedChange(!expanded)
                 },
             label = {
-                Text(stringResource(R.string.header_select_program))
+                Text(text = label)
             },
             shape = RoundedCornerShape(8.dp),
             trailingIcon = {

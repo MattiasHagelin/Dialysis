@@ -1,6 +1,7 @@
 package com.math3249.dialysis
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -45,6 +46,7 @@ import com.math3249.dialysis.ui.components.model.TabItem
 import com.math3249.dialysis.ui.screen.DialysisScreen
 import com.math3249.dialysis.ui.screen.FluidBalanceScreen
 import com.math3249.dialysis.ui.screen.MedicationListScreen
+import com.math3249.dialysis.ui.screen.MedicationScreen
 import com.math3249.dialysis.ui.theme.MyApplicationTheme
 import com.math3249.dialysis.ui.util.viewModelFactory
 import com.math3249.dialysis.ui.viewmodel.DialysisViewModel
@@ -171,6 +173,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         2 -> {
                                             MedicationListScreen(
+                                                navigateAdd = {navController.navigate(Constants.MEDICATION_ADD)}
 //                                                navController = navController,
 //                                                title = stringResource(R.string.icon_medication_list),
 //                                                onSignOut = {
@@ -185,7 +188,9 @@ class MainActivity : ComponentActivity() {
                             }
                         }
 
-                        //DialysisUi()
+                        composable(Constants.MEDICATION_ADD) {
+                            AddMedicationScreen(navController)
+                        }
                     }
                 }
             }
@@ -219,15 +224,15 @@ class MainActivity : ComponentActivity() {
             }
 
             composable(Constants.MEDICATION_LIST) {
-                MedicationListScreen(
-//                    navController = navController,
-//                    title = stringResource(R.string.icon_medication_list),
-//                    onSignOut = {
-//                        signOut(navController)
-//                    },
-//                    navigateUp = { navController.popBackStack() },
-//                    canNavigateBack = true
-                )
+//                MedicationListScreen(
+////                    navController = navController,
+////                    title = stringResource(R.string.icon_medication_list),
+////                    onSignOut = {
+////                        signOut(navController)
+////                    },
+////                    navigateUp = { navController.popBackStack() },
+////                    canNavigateBack = true
+//                )
             }
 
             composable(Constants.FLUID_BALANCE) {
@@ -255,6 +260,21 @@ class MainActivity : ComponentActivity() {
 //        LaunchedEffect(Unit) {
 //            fluidBalanceViewModel.focusRequester.value.requestFocus()
 //        }
+    }
+
+    @Composable
+    private fun AddMedicationScreen(navController: NavHostController) {
+        MedicationScreen(
+            onNavigateBack = {
+                navController.navigateUp()
+                Toast.makeText(applicationContext, "Medication was not saved.", Toast.LENGTH_LONG).show()
+            },
+            onConfirmAction = { },
+            title = "Add medication",
+            buttonText = "Affirmative",
+            viewModel = null,
+            context = applicationContext
+        )
     }
 
     @Composable
