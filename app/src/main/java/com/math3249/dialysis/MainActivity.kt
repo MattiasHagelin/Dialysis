@@ -272,8 +272,7 @@ class MainActivity : ComponentActivity() {
             onConfirmAction = { },
             title = "Add medication",
             buttonText = "Affirmative",
-            viewModel = null,
-            context = applicationContext
+//            viewModel = null,
         )
     }
 
