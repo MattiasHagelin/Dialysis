@@ -1,4 +1,4 @@
-package com.math3249.dialysis.ui.screen
+package com.math3249.dialysis.medications.presentation.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,10 +21,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.math3249.dialysis.medications.presentation.MedicationViewModel
 import com.math3249.dialysis.ui.components.DialysisAppBar
+import com.math3249.dialysis.ui.components.LabeledCheckbox
 import com.math3249.dialysis.ui.components.SelectTextField
-import com.math3249.dialysis.ui.viewmodel.MedicationViewModel
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
@@ -35,34 +35,41 @@ import java.time.LocalTime
 @Composable
 fun MedicationScreen(
      onNavigateBack: () -> Unit,
-     onConfirmAction: () -> Unit,
+     confirmationToast: (String) -> Unit,
+     cancelToast: () -> Unit,
      title: String,
-     buttonText: String,
-//     viewModel: MedicationViewModel?
+     viewModel: MedicationViewModel
 ) {
-    val viewModel = viewModel<MedicationViewModel>()
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
     Column (
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
     ) {
+        val name = viewModel.name.collectAsStateWithLifecycle().value
         DialysisAppBar(
             canNavigateBack = true,
-            navigateUp = onNavigateBack,
+            navigateUp = {
+                onNavigateBack()
+                cancelToast()
+            },
             canSignOut = false,
             showMenu = false,
             title = title,
             onSignOut = { /*TODO*/ },
             currentLocation = "here",
             canSave = true,
-            onSaveAction = {}
+            onSaveAction = {
+//                viewModel.saveMedication()
+                confirmationToast(name)
+                onNavigateBack()
+            }
         )
         Row {
             OutlinedTextField(
-                value = viewModel.name.collectAsStateWithLifecycle().value,
+                value = name,
                 onValueChange = {
                                 viewModel.setName(it)
                 },
@@ -190,8 +197,10 @@ fun MedicationScreen(
         }
         Row {
             OutlinedTextField(
-                value = "",
-                onValueChange = {},
+                value = viewModel.interval.collectAsStateWithLifecycle().value,
+                onValueChange = {
+                    viewModel.setInterval(it)
+                },
                 singleLine = true,
                 label = {
                     Text(text = "Interval")
@@ -201,6 +210,42 @@ fun MedicationScreen(
                     .padding(start = 5.dp, end = 5.dp)
                     .weight(1f)
             )
+        }
+        Row {
+            LabeledCheckbox(
+                label = "Paused",
+                state = viewModel.paused.collectAsStateWithLifecycle().value,
+                onStateChange = {
+                    viewModel.setPaused(it)
+                }
+            )
+        }
+        val needPrep = viewModel.needPrep.collectAsStateWithLifecycle().value
+        Row {
+            LabeledCheckbox(
+                label = "Preparation needed",
+                state = needPrep,
+                onStateChange = {
+                    viewModel.setNeedPrep(it)
+                }
+            )
+        }
+        if (needPrep) {
+            Row {
+                OutlinedTextField(
+                    value = viewModel.prepDesc.collectAsStateWithLifecycle().value,
+                    onValueChange = {
+                        viewModel.setPrepDesc(it)
+                    },
+                    label = {
+                        Text(text = "Preparation Description")
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier
+                        .padding(start = 5.dp, end = 5.dp)
+                        .weight(1f)
+                )
+            }
         }
     }
 
@@ -240,11 +285,10 @@ fun MedicationScreen(
 @Composable
 @Preview
 fun MedicationScreenPreview(){
-    MedicationScreen(
-        onNavigateBack = {},
-        onConfirmAction = {},
-        title = "Title",
-        buttonText = "button",
-//        viewModel = null
-    )
+//    MedicationScreen(
+//        onNavigateBack = {},
+//        onConfirmAction = {},
+//        title = "Title",
+////        viewModel = null
+//    )
 }

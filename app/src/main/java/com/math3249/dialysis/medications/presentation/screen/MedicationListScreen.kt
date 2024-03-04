@@ -1,9 +1,9 @@
-package com.math3249.dialysis.ui.screen
+package com.math3249.dialysis.medications.presentation.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,26 +17,22 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.math3249.dialysis.R
 import com.math3249.dialysis.ui.components.DialysisDropDownMenu
-import com.math3249.dialysis.ui.components.SelectTextField
 import com.math3249.dialysis.ui.components.model.MenuItemData
+import com.math3249.dialysis.ui.swipe.SwipeBothDirectionContainer
 import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
@@ -47,7 +43,6 @@ fun MedicationListScreen(
 
 ) {
     val expanded = MutableStateFlow(false)
-    val showEdit = MutableStateFlow(false)
     val items = mutableListOf("")
     for (i in 1..100) {
         items.add(i.toString())
@@ -62,21 +57,24 @@ fun MedicationListScreen(
                 .padding(1.dp)
         ) {
             items(items) { item ->
-                MedicationCard(data = item)
+                SwipeBothDirectionContainer(
+                    item = item,
+                    onEndToStart = {
+                        items -= item
+                    },
+                    onStartToEnd = {
+                        Log.i("MedicationList", "Medication Paused")
+                        items -= item
+                    }
+                ) {
+                    MedicationCard(data = item)
+                }
             }
         }
         Row (
             modifier = Modifier
                 .align(Alignment.BottomEnd)
         ) {
-//            FloatingActionButton(
-//                onClick = { showEdit.value = true },
-//                shape = CircleShape,
-//                modifier = Modifier
-//                    .padding(top = 20.dp, end = 5.dp, bottom = 15.dp)
-//            ) {
-//                Icon(imageVector = Icons.Outlined.Add, contentDescription = null)
-//            }
             FloatingActionButton(
                 onClick = { expanded.value = true },
                 shape = CircleShape,
@@ -96,103 +94,9 @@ fun MedicationListScreen(
             }
         }
     }
-
-    if (false) {
-        MedicineDialog (
-            onDismiss = {showEdit.value = false}
-        )
-    }
 }
 
-@Composable
-private fun MedicineDialog(
-    onDismiss: () -> Unit
-){
-    Dialog(
-        onDismissRequest = onDismiss
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .shadow(10.dp, RoundedCornerShape(8.dp))
-                .background(Color.White)
-                .padding(top = 10.dp, bottom = 10.dp)
-        ){
-            Column (
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Row {
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
-                        singleLine = true,
-                        label = {
-                            Text(text = "Name")
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .padding(start = 5.dp, end = 5.dp)
-                            .weight(1f)
-                    )
-                }
-                Row {
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
-                        singleLine = true,
-                        label = {
-                            Text(text = "Dose")
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .padding(start = 5.dp, end = 5.dp)
-                            .weight(2f)
-                    )
-                    SelectTextField(
-                        value = "",
-                        label = "",
-                        expanded = false,
-                        onExpandedChange = {},
-                        onValueChange = {},
-                        onDismissRequest = { /*TODO*/ },
-                        items = listOf {
-                            DropdownMenuItem(
-                                  text = { "ml" }, onClick = { /*TODO*/ }
-                            )
-                            DropdownMenuItem(
-                                text = { "g" }, onClick = { /*TODO*/ }
-                            )
-                            DropdownMenuItem(
-                                text = { "tablett" }, onClick = { /*TODO*/ }
-                            )
-                        },
-                        modifier = Modifier
-                            .padding(start = 5.dp, end = 5.dp)
-                            .weight(1f)
-                    )
 
-                }
-                Row {
-                    OutlinedTextField(
-                        value = "",
-                        onValueChange = {},
-                        singleLine = true,
-                        label = {
-                            Text(text = "Name")
-                        },
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier
-                            .padding(start = 5.dp, end = 5.dp)
-                            .weight(1f)
-                    )
-                }
-            }
-
-        }
-    }
-}
 
 @Composable
 fun MedicationCard(

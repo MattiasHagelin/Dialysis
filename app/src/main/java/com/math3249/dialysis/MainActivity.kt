@@ -38,6 +38,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.auth.api.identity.Identity
+import com.math3249.dialysis.medications.presentation.screen.MedicationListScreen
+import com.math3249.dialysis.medications.presentation.screen.MedicationScreen
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.ui.authentication.GoogleAuthUiClient
 import com.math3249.dialysis.ui.authentication.SignInScreen
@@ -45,12 +47,11 @@ import com.math3249.dialysis.ui.authentication.SignInViewModel
 import com.math3249.dialysis.ui.components.model.TabItem
 import com.math3249.dialysis.ui.screen.DialysisScreen
 import com.math3249.dialysis.ui.screen.FluidBalanceScreen
-import com.math3249.dialysis.ui.screen.MedicationListScreen
-import com.math3249.dialysis.ui.screen.MedicationScreen
 import com.math3249.dialysis.ui.theme.MyApplicationTheme
 import com.math3249.dialysis.ui.util.viewModelFactory
 import com.math3249.dialysis.ui.viewmodel.DialysisViewModel
 import com.math3249.dialysis.ui.viewmodel.FluidBalanceViewModel
+import com.math3249.dialysis.medications.presentation.MedicationViewModel
 import com.math3249.dialysis.ui.viewmodel.TabViewModel
 import kotlinx.coroutines.launch
 
@@ -267,12 +268,19 @@ class MainActivity : ComponentActivity() {
         MedicationScreen(
             onNavigateBack = {
                 navController.navigateUp()
-                Toast.makeText(applicationContext, "Medication was not saved.", Toast.LENGTH_LONG).show()
             },
-            onConfirmAction = { },
+            cancelToast = {
+                Toast.makeText(applicationContext, "Add medication was canceled.", Toast.LENGTH_LONG).show()
+                          },
+            confirmationToast = {
+                Toast.makeText(applicationContext, "$it was saved.", Toast.LENGTH_LONG).show()
+            },
             title = "Add medication",
-            buttonText = "Affirmative",
-//            viewModel = null,
+            viewModel = viewModel<MedicationViewModel>(
+                factory = viewModelFactory {
+                    MedicationViewModel(BaseApp.medicineModule.medicineRepository)
+                }
+            )
         )
     }
 
