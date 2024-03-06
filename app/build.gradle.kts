@@ -51,6 +51,10 @@ android {
 }
 
 dependencies {
+    implementation("com.squareup.moshi:moshi-kotlin:1.15.0")
+    implementation("com.squareup.moshi:moshi:1.15.0")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
 
     //Compose
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")

@@ -3,17 +3,18 @@ package com.math3249.dialysis.ui.viewmodel
 import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.math3249.dialysis.BaseApp
 import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.data.model.GroupMember
 import com.math3249.dialysis.data.repository.repository_interface.IFluidBalance
-import com.math3249.dialysis.other.IGroupMemberCallback
+import com.math3249.dialysis.session.ISessionCache
+import com.math3249.dialysis.session.Session
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class FluidBalanceViewModel(
-    private val repository: IFluidBalance
+    private val repository: IFluidBalance,
+    private val sessionCache: ISessionCache
 ) :ViewModel(){
     private val _fluidBalance = MutableStateFlow<FluidBalance?>(FluidBalance())
     private val _editFluidLimit = MutableStateFlow("")
@@ -27,27 +28,20 @@ class FluidBalanceViewModel(
     val consumedFluid = _consumedFluid.asStateFlow()
     val focusRequester = _focusRequester.asStateFlow()
     val showDialog = _showDialog.asStateFlow()
-    private val groupKey = _groupKey.asStateFlow()
+    private val session: Session
 
     init {
-        getGroupKey()
+        session = sessionCache.getActiveSession() ?: Session(
+            userId = "",
+            email = "",
+            groupId = ""
+        )
+        getFluidBalance()
     }
 
-    private fun getGroupKey() {
-        viewModelScope.launch {
-            repository.getGroupKey(BaseApp.userData.userId, object: IGroupMemberCallback {
-                override fun onCallback(value: GroupMember) {
-                    _groupKey.value = value
-                    if (BaseApp.groupKey.isBlank() && value.groupId.isNotBlank())
-                        BaseApp.groupKey = value.groupId
-                    getFluidBalance()
-                }
-            })
-        }
-    }
     private fun getFluidBalance() {
         viewModelScope.launch {
-            repository.getFluidBalance(groupKey.value.groupId).collect {
+            repository.getFluidBalance(session.groupId).collect {
                 when {
                     it.isSuccess -> {
                         _fluidBalance.value = it.getOrNull()
@@ -63,7 +57,7 @@ class FluidBalanceViewModel(
 
     fun reset() {
         viewModelScope.launch {
-            repository.resetFluidBalance(groupKey.value.groupId)
+            repository.resetFluidBalance(session.groupId)
         }
     }
 
@@ -73,7 +67,7 @@ class FluidBalanceViewModel(
             if (fluidBalance.value != null &&
                 volumeAsInt != null) {
                 fluidBalance.value!!.consumedFluid += volumeAsInt
-                repository.addConsumedFluid(fluidBalance.value!!, groupKey.value.groupId)
+                repository.addConsumedFluid(fluidBalance.value!!, session.groupId)
             }
         }
     }
@@ -87,7 +81,7 @@ class FluidBalanceViewModel(
             if (volumeAsInt != null
                 && _fluidBalance.value != null) {
                 _fluidBalance.value!!.fluidLimit = volumeAsInt
-                repository.updateFluidLimit(fluidBalance.value!!, groupKey.value.groupId)
+                repository.updateFluidLimit(fluidBalance.value!!, session.groupId)
             }
 
         }

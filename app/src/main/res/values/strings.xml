@@ -2,6 +2,7 @@
     <string name="app_name">Dialysis</string>
     <!-- Screen name -->
     <string name="screen_fluid_balance">Fluid balance</string>
+    <string name="screen_dialysis">Dialysis</string>
 
     <string name="weight_after">Weight after</string>
     <string name="weight_before">Weight before</string>
@@ -48,9 +49,11 @@
     <!-- Hint Text -->
     <string name="hint_consumed_fluid">Consumed fluid</string>
 
-    <!-- -->
+    <!-- Messages -->
     <string name="dialog_confirm_delete">Really delete?</string>
     <string name="entry_deleted_confirmation">Entry deleted.</string>
+    <string name="cancelled_add_medication">New medication was cancelled.</string>
+    <string name="new_medication_added">%1$s was added.</string>
 
 
     <string name="web_client_id">730837567360-en30bblbp4otpgl5sf5ij9v24djqi5b3.apps.googleusercontent.com</string>

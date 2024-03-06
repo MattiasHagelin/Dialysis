@@ -9,7 +9,6 @@ import com.math3249.dialysis.data.model.FluidBalance
 import com.math3249.dialysis.data.model.GroupMember
 import com.math3249.dialysis.data.repository.repository_interface.IFluidBalance
 import com.math3249.dialysis.other.Constants
-import com.math3249.dialysis.other.IGroupMemberCallback
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.callbackFlow
@@ -55,7 +54,7 @@ class FluidBalanceRepository (
 
     override suspend fun getGroupKey(
         user: String,
-        groupMemberCallback: IGroupMemberCallback
+        callback: (GroupMember) -> Unit
     ) {
          groupMember.child(user).get()
             .addOnSuccessListener {
@@ -63,7 +62,7 @@ class FluidBalanceRepository (
                     Log.i("firebase", "Got value ${item.value}")
                     val data = item.getValue(GroupMember::class.java)
                     if (data != null)
-                        groupMemberCallback.onCallback(data)
+                        callback(data)
                 }
             }
             .addOnFailureListener {

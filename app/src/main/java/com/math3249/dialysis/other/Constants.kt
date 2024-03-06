@@ -8,6 +8,12 @@ object Constants {
     const val TABLE_GROUP_MEMBER = "group_member"
     const val TABLE_GROUP = "group"
     const val TABLE_MEDICATIONS = "medications"
+    const val SESSION = "session"
+
+    //Date and Time pattern
+    const val DATE_PATTERN = "dd-MM-yyyy"
+    const val TIME_24_H = "HH:mm"
+    const val TIME_12_H = "hh:mm"
 
     //Dialysis data ids
     const val WEIGHT_BEFORE = "weightBefore"
@@ -20,7 +26,7 @@ object Constants {
     const val DIALYSIS = "dialysis"
     const val SIGN_IN = "sign_in"
     const val MEDICATION_LIST = "medication_list"
-    const val MEDICATION_ADD = "addMedication"
+    const val MEDICATION_ADD = "add_Medication"
     const val FLUID_BALANCE = "fluid_balance"
     const val SETTINGS = "settings"
     const val TABS = "tabs"
