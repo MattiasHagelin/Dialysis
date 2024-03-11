@@ -1,9 +1,12 @@
 package com.math3249.dialysis.medication.presentation
 
+import com.math3249.dialysis.medication.data.Medication
 import java.time.LocalDate
 import java.time.LocalTime
 
 data class MedicationUiState(
+    val medications: MutableList<Medication> = mutableListOf(),
+    val pausedMedications: MutableList<Medication> = mutableListOf(),
     val name: String = "",
     val dose: String = "",
     val time: LocalTime = LocalTime.now(),
@@ -17,5 +20,5 @@ data class MedicationUiState(
     val prepDescription: String = "",
     val expanded: Boolean = false,
     val selectedValue: String = "",
-    val edit: Boolean = false
+    val medicationKey: String = ""
 )

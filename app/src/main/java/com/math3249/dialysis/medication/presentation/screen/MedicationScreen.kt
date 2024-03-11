@@ -10,23 +10,26 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.CalendarMonth
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
-import com.math3249.dialysis.medication.presentation.MedicationViewModel
+import androidx.navigation.compose.rememberNavController
+import com.math3249.dialysis.R
+import com.math3249.dialysis.medication.domain.MedicationEvent
+import com.math3249.dialysis.medication.presentation.MedicationUiState
+import com.math3249.dialysis.navigation.NavigateEvent
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.ui.components.DialysisAppBar
 import com.math3249.dialysis.ui.components.LabeledCheckbox
-import com.math3249.dialysis.ui.components.SelectTextField
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
@@ -37,13 +40,9 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun MedicationScreen(
-    key: String? = null,
-    navController: NavController,
-//    onNavigateBack: () -> Unit,
-//    confirmationToast: (String) -> Unit,
-//    cancelToast: () -> Unit,
-    title: String,
-    viewModel: MedicationViewModel
+    state: MedicationUiState,
+    onEvent: (MedicationEvent) -> Unit,
+    onNavigateEvent: (NavigateEvent) -> Unit = {}
 ) {
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
@@ -53,36 +52,36 @@ fun MedicationScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        if (key != null) {
-            viewModel.getMedication(key)
-        }
-        val state = viewModel.state.collectAsStateWithLifecycle().value
         DialysisAppBar(
             canNavigateBack = true,
             navigateUp = {
-                navController.navigateUp()
-//                onNavigateBack()
-//                cancelToast()
+                onEvent(MedicationEvent.Clear)
+                onNavigateEvent(NavigateEvent.ToPrevious)
+
             },
-            canSignOut = false,
-            showMenu = false,
-            title = title,
-            onSignOut = { /*TODO*/ },
-            currentLocation = "here",
-            canSave = true,
-            onSaveAction = {
-                if (key != null)
-                    viewModel.updateMedication(key)
-                else
-                    viewModel.saveMedication()
-                navController.navigateUp()
+            title = if (state.medicationKey != "") {
+                stringResource(R.string.update_medication)
+            } else {
+                stringResource(R.string.add_medication)
+            },
+            saveAction = {
+                IconButton(onClick = {
+                    if (state.medicationKey != "")
+                        onEvent(MedicationEvent.UpdateMedication)
+                    else
+                        onEvent(MedicationEvent.CreateMedication)
+                    onNavigateEvent(NavigateEvent.ToPrevious)
+                }) {
+                    Icon(imageVector = Icons.Outlined.Save, contentDescription = null)
+                }
+
             }
         )
         Row {
             OutlinedTextField(
                 value = state.name,
                 onValueChange = {
-                    viewModel.updateName(it)
+                    onEvent(MedicationEvent.UpdateName(it))
                 },
                 singleLine = true,
                 label = {
@@ -98,7 +97,7 @@ fun MedicationScreen(
             OutlinedTextField(
                 value = state.dose,
                 onValueChange = {
-                    viewModel.updateDose(it)
+                    onEvent(MedicationEvent.UpdateDose(it))
                 },
                 singleLine = true,
                 label = {
@@ -109,45 +108,44 @@ fun MedicationScreen(
                     .padding(start = 5.dp, end = 5.dp)
                     .weight(2f)
             )
-            SelectTextField(
-                value = state.selectedValue,
-                label = "Unit",
-                expanded = state.expanded,
-                onExpandedChange = {
-                    viewModel.updateExpanded(it)
-                },
-                onValueChange = {},
-                onDismissRequest = { viewModel.updateExpanded(false) },
-                items = listOf {
-                    DropdownMenuItem(
-                        text = {
-                            Text("ml") },
-                        onClick = {
-                            viewModel.updateSelectedValue("ml")
-                            viewModel.updateExpanded(false)
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text("g") },
-                        onClick = {
-                            viewModel.updateSelectedValue("g")
-                            viewModel.updateExpanded(false)
-                        }
-                    )
-                    DropdownMenuItem(
-                        text = {
-                            Text("tablett") },
-                        onClick = {
-                            viewModel.updateSelectedValue("tablett")
-                            viewModel.updateExpanded(false)
-                        }
-                    )
-                },
-                modifier = Modifier
-                    .padding(start = 5.dp, end = 5.dp)
-                    .weight(1f)
-            )
+//            TODO fix the SelectText
+//            SelectTextField(
+//                value = state.selectedValue,
+//                label = "Unit",
+//                onValueChange = {},
+//                onDismissRequest = {
+//                    onEvent(MedicationEvent.UpdateExpanded(false))
+//               },
+//                items = listOf {
+//                    DropdownMenuItem(
+//                        text = {
+//                            Text("ml") },
+//                        onClick = {
+//                            onEvent(MedicationEvent.UpdateSelectedValue("ml"))
+//                            onEvent(MedicationEvent.UpdateExpanded(false))
+//                        }
+//                    )
+//                    DropdownMenuItem(
+//                        text = {
+//                            Text("g") },
+//                        onClick = {
+//                            onEvent(MedicationEvent.UpdateSelectedValue("g"))
+//                            onEvent(MedicationEvent.UpdateExpanded(false))
+//                        }
+//                    )
+//                    DropdownMenuItem(
+//                        text = {
+//                            Text("tablett") },
+//                        onClick = {
+//                            onEvent(MedicationEvent.UpdateSelectedValue("tablett"))
+//                            onEvent(MedicationEvent.UpdateExpanded(false))
+//                        }
+//                    )
+//                },
+//                modifier = Modifier
+//                    .padding(start = 5.dp, end = 5.dp)
+//                    .weight(1f)
+//            )
 
         }
         Row {
@@ -206,7 +204,7 @@ fun MedicationScreen(
             OutlinedTextField(
                 value = state.interval,
                 onValueChange = {
-                    viewModel.updateInterval(it)
+                    onEvent(MedicationEvent.UpdateInterval(it))
                 },
                 singleLine = true,
                 label = {
@@ -223,7 +221,7 @@ fun MedicationScreen(
                 label = "Paused",
                 state = state.paused,
                 onStateChange = {
-                    viewModel.updatePaused(it)
+                    onEvent(MedicationEvent.UpdatePaused(it))
                 }
             )
         }
@@ -232,7 +230,7 @@ fun MedicationScreen(
                 label = "Preparation needed",
                 state = state.needPrep,
                 onStateChange = {
-                    viewModel.updateNeedPrep(it)
+                    onEvent(MedicationEvent.UpdateNeedPrep(it))
                 }
             )
         }
@@ -241,7 +239,7 @@ fun MedicationScreen(
                 OutlinedTextField(
                     value = state.prepDescription,
                     onValueChange = {
-                        viewModel.updatePrepDesc(it)
+                        onEvent(MedicationEvent.UpdatePrepDescription(it))
                     },
                     label = {
                         Text(text = "Preparation Description")
@@ -266,7 +264,7 @@ fun MedicationScreen(
             initialDate = LocalDate.now(),
             title = "Start date",
         ) {
-            viewModel.updateStartDate(it)
+            onEvent(MedicationEvent.UpdateStartDate(it))
         }
     }
 
@@ -283,7 +281,7 @@ fun MedicationScreen(
             is24HourClock = true
 
         ){
-            viewModel.updateTime(it)
+            onEvent(MedicationEvent.UpdateTime(it))
         }
     }
 }
@@ -291,10 +289,13 @@ fun MedicationScreen(
 @Composable
 @Preview
 fun MedicationScreenPreview(){
-//    MedicationScreen(
-//        onNavigateBack = {},
-//        onConfirmAction = {},
-//        title = "Title",
-////        viewModel = null
-//    )
+    val navController = rememberNavController()
+    MedicationScreen(
+        state = MedicationUiState(
+            name = "Hello World",
+            time = LocalTime.MIDNIGHT,
+            interval = "100y"
+        ),
+        onEvent = {}
+    )
 }

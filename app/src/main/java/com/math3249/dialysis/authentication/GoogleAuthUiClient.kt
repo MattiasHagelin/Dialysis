@@ -33,8 +33,8 @@ class GoogleAuthUiClient (
     }
 
     suspend fun signInWithIntent(intent: Intent): SignInResult {
-        val crendetial = oneTapClient.getSignInCredentialFromIntent(intent)
-        val googleIdToken = crendetial.googleIdToken
+        val credential = oneTapClient.getSignInCredentialFromIntent(intent)
+        val googleIdToken = credential.googleIdToken
         val googleCredentials = GoogleAuthProvider.getCredential(googleIdToken, null)
         return try {
             val user = auth.signInWithCredential(googleCredentials).await().user

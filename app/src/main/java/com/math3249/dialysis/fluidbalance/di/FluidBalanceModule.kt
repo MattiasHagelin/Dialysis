@@ -1,12 +1,11 @@
-package com.math3249.dialysis.di
+package com.math3249.dialysis.fluidbalance.di
 
 import android.content.Context
 import com.google.firebase.Firebase
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.database
-import com.math3249.dialysis.data.repository.FluidBalanceRepository
-import com.math3249.dialysis.data.repository.repository_interface.IFluidBalance
-import com.math3249.dialysis.di.di_interface.IFluidBalanceModule
+import com.math3249.dialysis.fluidbalance.data.FluidBalanceRepository
+import com.math3249.dialysis.fluidbalance.data.IFluidBalance
 import com.math3249.dialysis.other.Constants
 
 class FluidBalanceModule(

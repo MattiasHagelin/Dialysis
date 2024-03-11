@@ -2,7 +2,15 @@
     <string name="app_name">Dialysis</string>
     <!-- Screen name -->
     <string name="screen_fluid_balance">Fluid balance</string>
+    <string name="screen_fluid_balance_history">Fluid balance history</string>
     <string name="screen_dialysis">Dialysis</string>
+    <string name="dialysis_entries">Dialysis entries</string>
+    <string name="add_dialysis_entry">Add dialysis entry</string>
+    <string name="update_dialysis_entry">Update dialysis entry</string>
+    <string name="blood_pressure">Blood pressure</string>
+    <string name="medications">Medications</string>
+    <string name="add_medication">Add medication</string>
+    <string name="update_medication">Update medication</string>
 
     <string name="weight_after">Weight after</string>
     <string name="weight_before">Weight before</string>
@@ -13,12 +21,15 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
-    <string name="add_entry">Add Entry</string>
+    <string name="add_entry">Add entry</string>
     <string name="add">Add</string>
     <string name="logout">Logout</string>
     <string name="login">Login</string>
     <string name="settings">Settings</string>
     <string name="reset">Reset</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="history">History</string>
 
     <!-- Header Text -->
     <string name="header_fluid_limit">Fluid limit</string>
@@ -50,11 +61,27 @@
     <string name="hint_consumed_fluid">Consumed fluid</string>
 
     <!-- Messages -->
-    <string name="dialog_confirm_delete">Really delete?</string>
+    <string name="dialog_delete">Do you want to delete?</string>
     <string name="entry_deleted_confirmation">Entry deleted.</string>
     <string name="cancelled_add_medication">New medication was cancelled.</string>
     <string name="new_medication_added">%1$s was added.</string>
 
+    <!-- Fluid type -->
+    <string name="water">Water</string>
+    <string name="juice">Juice</string>
+    <string name="dairy">Dairy</string>
+    <string name="nutrition">Nutrition</string>
+    <string name="other">Other</string>
+    <string name="other_fluid">Other fluid</string>
 
-    <string name="web_client_id">730837567360-en30bblbp4otpgl5sf5ij9v24djqi5b3.apps.googleusercontent.com</string>
+
+    <string name="web_client_id" translatable="false">730837567360-en30bblbp4otpgl5sf5ij9v24djqi5b3.apps.googleusercontent.com</string>
+    <string name="dialog_clear_history">Do you want to clear history?</string>
+    <string name="clear_history">Clear history</string>
+    <string name="empty_history">The history is empty.</string>
+    <string name="invite">Invite</string>
+    <string name="share">Share</string>
+    <string name="create_required_data">Create required data</string>
+    <string name="share_data_token">Share data token</string>
+    <string name="share_data_token_info">If you have recieved an invite add token here.</string>
 </resources>

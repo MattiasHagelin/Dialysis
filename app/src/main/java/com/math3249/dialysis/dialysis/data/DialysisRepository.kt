@@ -36,6 +36,29 @@ class DialysisRepository (
         }
     }
 
+    override suspend fun getDialysisEntry(
+        key: String,
+        groupId: String,
+        callback: (DialysisEntry) -> Unit
+    ) {
+        val listener = object: ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val dialysisEntry = snapshot.getValue(DialysisEntry::class.java)
+                if (dialysisEntry != null)
+                    callback(dialysisEntry)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                TODO("Not yet implemented")
+            }
+        }
+
+        group.child(groupId)
+            .child(Constants.TABLE_DIALYSIS_ENTRIES)
+            .child(key)
+            .addValueEventListener(listener)
+    }
+
     override suspend fun updateDialysisEntry(data: DialysisEntry, groupKey: String) {
         group.child(groupKey)
             .child(Constants.TABLE_DIALYSIS_ENTRIES)

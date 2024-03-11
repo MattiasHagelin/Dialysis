@@ -1,50 +1,95 @@
 package com.math3249.dialysis.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.math3249.dialysis.BaseApp
+import com.math3249.dialysis.authentication.GoogleAuthUiClient
+import com.math3249.dialysis.authentication.SignInNavigation
+import com.math3249.dialysis.authentication.SignInViewModel
+import com.math3249.dialysis.authentication.presentation.screen.FirstTimeSignInScreen
 import com.math3249.dialysis.dialysis.presentation.DialysisViewModel
-import com.math3249.dialysis.dialysis.presentation.screen.DialysisScreen
+import com.math3249.dialysis.dialysis.presentation.screen.DialysisEntryScreen
+import com.math3249.dialysis.dialysis.presentation.screen.DialysisOverviewScreen
+import com.math3249.dialysis.fluidbalance.presentation.FluidBalanceViewModel
+import com.math3249.dialysis.fluidbalance.presentation.screen.FluidBalanceHistoryScreen
+import com.math3249.dialysis.fluidbalance.presentation.screen.FluidBalanceScreen
+import com.math3249.dialysis.fluidbalance.presentation.screen.UpdateFluidBalanceLimitScreen
 import com.math3249.dialysis.medication.presentation.MedicationViewModel
 import com.math3249.dialysis.medication.presentation.screen.MedicationListScreen
 import com.math3249.dialysis.medication.presentation.screen.MedicationScreen
+import com.math3249.dialysis.start.presentation.StartViewModel
 import com.math3249.dialysis.start.presentation.screen.StartScreen
 import com.math3249.dialysis.ui.util.viewModelFactory
 
 @Composable
 fun Navigation(
-    signIn: @Composable (NavHostController) -> Unit,
-    signOut: (NavHostController) -> Unit
+    googleAuthUiClient: GoogleAuthUiClient
 ) {
     val navController = rememberNavController()
+    val navigator = Navigator(navController, googleAuthUiClient)
     NavHost(
         navController = navController,
-        startDestination = Screen.SignInScreen.route
+        startDestination = Screen.AppStartScreen.route
     ) {
-        composable(route = Screen.SignInScreen.route) {
-            signIn(navController)
+        navigation (
+            startDestination = Screen.SignInScreen.route,
+            route = Screen.AppStartScreen.route
+        ) {
+            composable(route = Screen.SignInScreen.route) {
+                val viewModel = it.sharedViewModel<SignInViewModel>(
+                    navController = navController,
+                    factory = viewModelFactory {
+                        SignInViewModel(
+                            sessionCache = BaseApp.sessionCache,
+                            repository = BaseApp.sessionDataModule.sessionDataRepository,
+                            onNavigateEvent = navigator::onNavigateEvent
+                        )
+                    }
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                SignInNavigation(
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
+            }
+
+            composable(Screen.FirstTimeSignInScreen.route) {
+                val viewModel = it.sharedViewModel<SignInViewModel>(navController = navController)
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                FirstTimeSignInScreen(
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
+            }
+
+            composable(route = Screen.StartScreen.route) {
+                val viewModel = viewModel<StartViewModel>(
+                    factory = viewModelFactory {
+                        StartViewModel(navigator::onNavigateEvent)
+                    }
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                StartScreen(
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
+            }
         }
 
-        composable(route = Screen.StartScreen.route) {
-            StartScreen(
-                navController = navController,
-                onSignOutAction = { signOut(navController) }
-            )
-        }
 
         navigation(
             startDestination = Screen.MedicationOverview.route,
@@ -56,36 +101,31 @@ fun Navigation(
                     factory = viewModelFactory {
                         MedicationViewModel(
                             repository = BaseApp.medicineModule.medicineRepository,
-                            sessionCache = BaseApp.sessionCache
+                            sessionCache = BaseApp.sessionCache,
+                            onNavigateEvent = navigator::onNavigateEvent
                         )
                     }
                 )
+                val state by viewModel.state.collectAsStateWithLifecycle()
                 MedicationListScreen(
-                    navController = navController,
-                    viewModel = viewModel,
-                    onSignOut = {
-                        signOut(navController)
-                    }
+                    state = state,
+                    onEvent = viewModel::onEvent
                 )
             }
-            composable(route = Screen.MedicationSaveScreen.route + "?medicationKey={medicationKey}",
+            composable(route = Screen.MedicationSaveScreen.route/* + "?medicationKey={medicationKey}",
                 arguments = listOf(
                     navArgument("medicationKey") {
                         type = NavType.StringType
                         nullable = true
                     }
-                )
+                )*/
             ) {
                 val viewModel = it.sharedViewModel<MedicationViewModel>(navController = navController)
+                val state by viewModel.state.collectAsStateWithLifecycle()
                 MedicationScreen(
-                    navController = navController,
-                    key = it.arguments?.getString("medicationKey"),
-                    title = if (it.arguments?.getString("medicationKey") != null) {
-                                "Update medication"
-                            } else {
-                                "New medication"
-                            },
-                    viewModel = viewModel
+                    state = state,
+                    onEvent = viewModel::onEvent,
+                    onNavigateEvent = navigator::onNavigateEvent
                 )
             }
         }
@@ -100,13 +140,83 @@ fun Navigation(
                     factory = viewModelFactory {
                         DialysisViewModel(
                             repository = BaseApp.dialysisModule.dialysisRepository,
-                            sessionCache = BaseApp.sessionCache)
+                            sessionCache = BaseApp.sessionCache,
+                            onNavigateEvent = navigator::onNavigateEvent
+                        )
                     }
                 )
-                DialysisScreen(
-                    viewModel = viewModel,
-                    onSignOut = { signOut(navController) },
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                DialysisOverviewScreen(
+                    state = state,
+                    onEvent = viewModel::onEvent,
                     modifier = Modifier.fillMaxSize())
+            }
+            composable(route = Screen.DialysisEntryScreen.route) {
+                val viewModel = it.sharedViewModel<DialysisViewModel>(navController = navController)
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                DialysisEntryScreen(
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
+            }
+        }
+
+        navigation(
+            startDestination = Screen.FluidBalanceDayScreen.route,
+            route = Screen.FluidBalanceScreen.route
+        ) {
+            composable(route = Screen.FluidBalanceDayScreen.route) {
+                val viewModel = it.sharedViewModel<FluidBalanceViewModel>(
+                    navController = navController,
+                    factory = viewModelFactory {
+                        FluidBalanceViewModel(
+                            repository = BaseApp.fluidBalanceModule.fluidBalanceRepository,
+                            sessionCache = BaseApp.sessionCache,
+                            onNavigateEvent = navigator::onNavigateEvent
+                        )
+                    }
+                )
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                FluidBalanceScreen(
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
+            }
+
+            composable(route = Screen.FluidBalanceUpdateFluidLimit.route) {
+                val viewModel = it.sharedViewModel<FluidBalanceViewModel>(navController = navController)
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                UpdateFluidBalanceLimitScreen(
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
+
+            }
+
+            composable(route = Screen.FluidBalanceHistoryScreen.route) {
+                val viewModel = it.sharedViewModel<FluidBalanceViewModel>(navController = navController)
+                val state by viewModel.state.collectAsStateWithLifecycle()
+
+                FluidBalanceHistoryScreen(
+                    state = state,
+                    onEvent = viewModel::onEvent
+                )
+            }
+        }
+
+        navigation(
+            startDestination = Screen.BloodPressureOverview.route,
+            route = Screen.BloodPressureScreen.route
+        ) {
+            composable(route = Screen.BloodPressureOverview.route) {
+                Button(onClick = { navController!!.navigate(Screen.StartScreen.route) {
+                    popUpTo(navController.graph.id) {
+                        inclusive = true
+                    }
+                } }) {
+
+                }
             }
         }
     }

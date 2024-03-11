@@ -4,12 +4,12 @@ import android.app.Application
 import android.content.Context
 import com.math3249.dialysis.authentication.di.ISessionDataModule
 import com.math3249.dialysis.authentication.di.SessionDataModule
-import com.math3249.dialysis.dialysis.di.DialysisModule
-import com.math3249.dialysis.di.FluidBalanceModule
 import com.math3249.dialysis.di.UserModule
-import com.math3249.dialysis.dialysis.di.IDialysisModule
-import com.math3249.dialysis.di.di_interface.IFluidBalanceModule
 import com.math3249.dialysis.di.di_interface.IUserModule
+import com.math3249.dialysis.dialysis.di.DialysisModule
+import com.math3249.dialysis.dialysis.di.IDialysisModule
+import com.math3249.dialysis.fluidbalance.di.FluidBalanceModule
+import com.math3249.dialysis.fluidbalance.di.IFluidBalanceModule
 import com.math3249.dialysis.medication.di.IMedicationModule
 import com.math3249.dialysis.medication.di.MedicationModule
 import com.math3249.dialysis.other.Constants
@@ -24,6 +24,7 @@ class BaseApp: Application() {
         lateinit var userModule: IUserModule
         lateinit var sessionDataModule: ISessionDataModule
         lateinit var sessionCache: SessionCache
+        //lateinit var googleAuthUiClient: GoogleAuthUiClient
     }
 
     override fun onCreate() {
@@ -34,6 +35,7 @@ class BaseApp: Application() {
         userModule = UserModule(this)
         sessionDataModule = SessionDataModule(this)
         sessionCache = SessionCache(getSharedPreferences(Constants.SESSION, Context.MODE_PRIVATE))
+//        googleAuthUiClient = GoogleAuthUiClient(this, Identity.getSignInClient(this))
     }
 
 

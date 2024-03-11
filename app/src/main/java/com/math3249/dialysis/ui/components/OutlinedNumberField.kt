@@ -1,6 +1,5 @@
 package com.math3249.dialysis.ui.components
 
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActionScope
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -8,7 +7,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.dp
 
 @Composable
 fun OutlinedNumberField(
@@ -31,7 +29,7 @@ fun OutlinedNumberField(
             onDone = onDone
         ),
         modifier = modifier,
-        shape = RoundedCornerShape(8.dp),
+//        shape = RoundedCornerShape(8.dp),
         trailingIcon = trailingIcon
     )
 }

@@ -5,9 +5,11 @@ object Constants {
     const val DATABASE_BASE_URL = "https://dialysis-8dae4-default-rtdb.europe-west1.firebasedatabase.app/"
     const val TABLE_DIALYSIS_ENTRIES = "dialysis_entries"
     const val TABLE_FLUID_BALANCE = "fluid_balance"
+    const val TABLE_FLUID_BALANCE_HISTORY = "fluid_balance_history"
     const val TABLE_GROUP_MEMBER = "group_member"
     const val TABLE_GROUP = "group"
     const val TABLE_MEDICATIONS = "medications"
+    const val TABLE_MEMBER_GROUP = "member_group"
     const val SESSION = "session"
 
     //Date and Time pattern
@@ -16,22 +18,32 @@ object Constants {
     const val TIME_12_H = "hh:mm"
 
     //Dialysis data ids
-    const val WEIGHT_BEFORE = "weightBefore"
-    const val WEIGHT_AFTER = "weightAfter"
-    const val ULTRAFILTRATION = "ultrafiltration"
-    const val KEY = "key"
-    const val SELECTED_ITEM = "selectedItem"
+//    const val WEIGHT_BEFORE = "weightBefore"
+//    const val WEIGHT_AFTER = "weightAfter"
+//    const val ULTRAFILTRATION = "ultrafiltration"
+//    const val KEY = "key"
+//    const val SELECTED_ITEM = "selectedItem"
 
     //Navigation locations
     const val DIALYSIS = "dialysis"
-    const val SIGN_IN = "sign_in"
+//    const val SIGN_IN = "sign_in"
     const val MEDICATION_LIST = "medication_list"
-    const val MEDICATION_ADD = "add_Medication"
+//    const val MEDICATION_ADD = "add_Medication"
     const val FLUID_BALANCE = "fluid_balance"
     const val SETTINGS = "settings"
-    const val TABS = "tabs"
+//    const val TABS = "tabs"
 
     //Color
     const val YELLOW = "#FFFF00"
     const val GREEN = "#008000"
+
+    //Fluid type
+    const val WATER = "water"
+    const val JUICE = "juice"
+    const val DAIRY = "dairy"
+    const val NUTRITION = "nutrition"
+    const val OTHER = "other"
+
+    //Log tags
+    const val DIALYSIS_FIREBASE = "dialysis_firebase"
 }

@@ -30,7 +30,7 @@ fun DialysisDropDownMenu(
                 title = item.title,
                 icon = item.icon,
                 onClick = item.onClick
-                )
+            )
         }
     }
 }

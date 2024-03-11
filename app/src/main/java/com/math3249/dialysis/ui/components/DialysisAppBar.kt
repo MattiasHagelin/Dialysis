@@ -5,13 +5,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ArrowBack
-import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.MedicalInformation
-import androidx.compose.material.icons.outlined.Menu
-import androidx.compose.material.icons.outlined.Save
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Vaccines
 import androidx.compose.material.icons.outlined.WaterDrop
@@ -28,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.math3249.dialysis.R
@@ -43,12 +38,8 @@ fun DialysisAppBar(
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     title: String,
-    canSignOut: Boolean,
-    onSignOut: () -> Unit,
-    showMenu: Boolean,
-    currentLocation: String,
-    canSave: Boolean,
-    onSaveAction: () -> Unit
+    menu: @Composable (MutableStateFlow<Boolean>) -> Unit = {},
+    saveAction: @Composable () -> Unit = {}
 ){
     val expanded = MutableStateFlow(false)
     TopAppBar(
@@ -59,7 +50,7 @@ fun DialysisAppBar(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         modifier = Modifier
-            .shadow(10.dp, RoundedCornerShape(8.dp))
+//            .shadow(10.dp, RoundedCornerShape(8.dp))
             .background(MaterialTheme.colorScheme.secondaryContainer),
         navigationIcon = {
             if (canNavigateBack) {
@@ -74,46 +65,8 @@ fun DialysisAppBar(
             }
         },
         actions = {
-            if (canSave) {
-                IconButton(
-                    onClick = onSaveAction
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Save,
-                        contentDescription = "Save"
-                    )
-                }
-            }
-            if (showMenu) {
-                IconButton(
-                    onClick = {
-                        expanded.value = true
-                    }) {
-                    Icon(
-                        imageVector = Icons.Outlined.Menu,
-                        contentDescription = stringResource(R.string.icon_menu)
-                    )
-                    DialysisDropdownMenu(
-                        currentLocation = currentLocation,
-//                    navController = navController,
-                        onDismissRequest = {
-                            expanded.value = false
-                        },
-                        expanded = expanded
-                    )
-                }
-            }
-
-            if (canSignOut) {
-                IconButton(
-                    onClick = onSignOut
-                ) {
-                    Icon(
-                        imageVector = Icons.Outlined.Logout,
-                        contentDescription = stringResource(R.string.icon_sign_out)
-                    )
-                }
-            }
+            saveAction()
+            menu(expanded)
         }
     )
 }

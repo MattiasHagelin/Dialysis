@@ -1,9 +1,8 @@
 package com.math3249.dialysis.data.repository.repository_interface
 
-import kotlinx.coroutines.flow.Flow
-
 interface IUser {
-    suspend fun getGroupKey(user: String): Flow<Result<String>>
+    suspend fun getGroupKey(user: String, callback: (String) -> Unit)
     suspend fun addNewGroupMember(user: String)
+    suspend fun createMemberGroup(user: String, callback: (String) -> Unit)
     suspend fun createNewGroup(user: String)
 }

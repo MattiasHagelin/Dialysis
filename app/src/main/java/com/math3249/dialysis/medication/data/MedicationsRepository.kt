@@ -1,5 +1,6 @@
 package com.math3249.dialysis.medication.data
 
+import android.util.Log
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -85,6 +86,7 @@ class MedicationsRepository(
     }*/
 
     override suspend fun updateMedication(medication: Medication, groupId: String) {
+        Log.i(Constants.DIALYSIS_FIREBASE, "Updating medication.")
         group.child(groupId)
             .child(Constants.TABLE_MEDICATIONS)
             .child(medication.key)
