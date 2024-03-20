@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Vaccines
 import androidx.compose.material.icons.outlined.WaterDrop
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -42,11 +42,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.math3249.dialysis.R
+import com.math3249.dialysis.navigation.NavigateEvent
 import com.math3249.dialysis.start.domain.StartEvent
 import com.math3249.dialysis.start.presentation.StartUiState
 import com.math3249.dialysis.ui.components.DialysisAppBar
 import com.math3249.dialysis.ui.components.DialysisDropDownMenu
 import com.math3249.dialysis.ui.components.model.MenuItemData
+import com.math3249.dialysis.util.EmailManager
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.customView
 import com.vanpra.composematerialdialogs.iconTitle
@@ -54,7 +56,8 @@ import com.vanpra.composematerialdialogs.iconTitle
 @Composable
 fun StartScreen(
     state: StartUiState,
-    onEvent: (StartEvent) -> Unit
+    onEvent: (StartEvent) -> Unit,
+    onNavigation: (NavigateEvent) -> Unit
 ) {
 //    val shareDialogState = rememberMaterialDialogState()
     Column(
@@ -81,22 +84,40 @@ fun StartScreen(
             }
         )
         StartRow(
-            onClickAction = { onEvent(StartEvent.SeeFluidBalance) },
+            onClickAction = { onNavigation(NavigateEvent.ToFluidBalance) },
             imageVector = Icons.Outlined.WaterDrop,
             text = stringResource(R.string.screen_fluid_balance),
             fontSize = 24.sp
+        )
+        Divider(
+            thickness = 1.dp,
+            color = Color.LightGray,
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
         )
         StartRow(
             imageVector = Icons.Outlined.MedicalInformation,
             text = stringResource(R.string.screen_dialysis),
             fontSize = 24.sp,
-            onClickAction = { onEvent(StartEvent.SeeDialysis)}
+            onClickAction = { onNavigation(NavigateEvent.ToDialysis)}
+        )
+        Divider(
+            thickness = 1.dp,
+            color = Color.LightGray,
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
         )
         StartRow(
             imageVector = Icons.Outlined.Vaccines,
             text = stringResource(R.string.icon_medication_list),
             fontSize = 24.sp,
-            onClickAction = { onEvent(StartEvent.SeeMedications) }
+            onClickAction = { onNavigation(NavigateEvent.ToMedications) }
+        )
+        Divider(
+            thickness = 1.dp,
+            color = Color.LightGray,
+            modifier = Modifier
+                .padding(horizontal = 15.dp)
         )
         StartRow(
             painter = painterResource(R.drawable.blood_pressure),
@@ -166,7 +187,6 @@ fun StartRow(
             }
             .fillMaxWidth()
             .background(Color.White)
-            .shadow(1.dp)
     ){
         if (imageVector != null) {
             Icon(
@@ -207,6 +227,7 @@ private fun StartMenu(
             title = stringResource(R.string.share),
             icon = Icons.Outlined.Share,
             onClick = {
+                EmailManager().sendEmail()
                 state.shareDialogState.show()
             }
         ),
@@ -232,7 +253,9 @@ private fun StartMenu(
 @Composable
 @Preview
 fun StartScreenPreview() {
-    StartScreen(StartUiState()) {
-
-    }
+    StartScreen(
+        state = StartUiState(),
+        onNavigation = {},
+        onEvent = {}
+    )
 }

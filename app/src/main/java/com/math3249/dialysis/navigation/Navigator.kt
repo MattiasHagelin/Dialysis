@@ -26,7 +26,8 @@ class Navigator(
             is NavigateEvent.ToStart -> toStart()
             is NavigateEvent.ToDialysisEntryScreen -> toDialysisEntryScreen()
             is NavigateEvent.ToMedicationSaveScreen -> toMedicationSaveScreen()
-            is NavigateEvent.ToPrevious -> navController.navigateUp()
+//            is NavigateEvent.ToPrevious -> navController.popBackStack()
+            is NavigateEvent.ToPrevious -> toPrevious(event.route)
             is NavigateEvent.ToFluidBalanceHistory -> toFluidBalanceHistory()
             is NavigateEvent.ToUpdateFluidBalanceLimit -> toUpdateFluidBalanceLimit()
             is NavigateEvent.ToFirstTimeSignIn -> toFirstTimeSignIn()
@@ -34,6 +35,7 @@ class Navigator(
             is NavigateEvent.ToFluidBalance -> navController.navigate(Screen.FluidBalanceScreen.route)
             is NavigateEvent.ToDialysis -> navController.navigate(Screen.DialysisScreen.route)
             is NavigateEvent.ToMedications -> navController.navigate(Screen.MedicationScreen.route)
+            is NavigateEvent.ToPausedMedication -> navController.navigate(Screen.MedicationPaused.route)
             is NavigateEvent.ToBloodPressure -> navController.navigate(Screen.BloodPressureScreen.route)
             else -> return
         }
@@ -60,5 +62,19 @@ class Navigator(
 
     private fun toDialysisEntryScreen() {
         navController.navigate(Screen.DialysisEntryScreen.route)
+    }
+
+    private fun toPrevious(route: String) {
+        if (route == Screen.StartScreen.route) {
+            toStart()
+        } else {
+            navController.navigate(route) {
+                popUpTo(navController.graph.startDestinationId) {
+                    saveState = true
+                }
+                launchSingleTop = true
+                restoreState = true
+            }
+        }
     }
 }

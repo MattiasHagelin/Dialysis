@@ -19,10 +19,10 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun LabeledRadioButton(
     label: String = "",
-    value: String = "",
+    value: Int = 0,
     fontSize: TextUnit = 18.sp,
     selected: Boolean = false,
-    onStateChange: (String, String) -> Unit = { _: String, _: String -> }
+    onStateChange: (Int) -> Unit = { }
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
@@ -30,7 +30,7 @@ fun LabeledRadioButton(
             .clickable(
                 role = Role.RadioButton,
                 onClick = {
-                    onStateChange(value, label)
+                    onStateChange(value)
                 }
             )
             .padding(start = 2.dp, end = 2.dp)
@@ -56,6 +56,6 @@ fun LabeledRadioButtonPreview() {
     LabeledRadioButton(
         label = "label",
         selected = true,
-        onStateChange = {_: String, _: String ->}
+        onStateChange = {}
     )
 }

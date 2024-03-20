@@ -1,8 +1,11 @@
 package com.math3249.dialysis.fluidbalance.data
 
+import com.math3249.dialysis.R
+
 data class FluidBalanceHistory(
     val drunkTimeStamp: String = "",
-    val drunkVolume: Int = 0,
+    val drunkVolume: String = "",
     val volumeUnit: String = "ml",
-    val fluidType: String = ""
+    val fluidType: Int = R.string.water,
+    val extraText: String = ""
 )

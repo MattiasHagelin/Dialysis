@@ -1,5 +1,6 @@
 package com.math3249.dialysis.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Button
 import androidx.compose.runtime.Composable
@@ -31,6 +32,7 @@ import com.math3249.dialysis.fluidbalance.presentation.screen.UpdateFluidBalance
 import com.math3249.dialysis.medication.presentation.MedicationViewModel
 import com.math3249.dialysis.medication.presentation.screen.MedicationListScreen
 import com.math3249.dialysis.medication.presentation.screen.MedicationScreen
+import com.math3249.dialysis.medication.presentation.screen.PausedMedications
 import com.math3249.dialysis.start.presentation.StartViewModel
 import com.math3249.dialysis.start.presentation.screen.StartScreen
 import com.math3249.dialysis.ui.util.viewModelFactory
@@ -40,6 +42,7 @@ fun Navigation(
     googleAuthUiClient: GoogleAuthUiClient
 ) {
     val navController = rememberNavController()
+    Log.i("MatH_Navigation", "NavController created")
     val navigator = Navigator(navController, googleAuthUiClient)
     NavHost(
         navController = navController,
@@ -85,7 +88,8 @@ fun Navigation(
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 StartScreen(
                     state = state,
-                    onEvent = viewModel::onEvent
+                    onEvent = viewModel::onEvent,
+                    onNavigation = navigator::onNavigateEvent
                 )
             }
         }
@@ -101,31 +105,33 @@ fun Navigation(
                     factory = viewModelFactory {
                         MedicationViewModel(
                             repository = BaseApp.medicineModule.medicineRepository,
-                            sessionCache = BaseApp.sessionCache,
-                            onNavigateEvent = navigator::onNavigateEvent
+                            sessionCache = BaseApp.sessionCache
                         )
                     }
                 )
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 MedicationListScreen(
                     state = state,
-                    onEvent = viewModel::onEvent
+                    onEvent = viewModel::onEvent,
+                    onNavigate = navigator::onNavigateEvent
                 )
             }
-            composable(route = Screen.MedicationSaveScreen.route/* + "?medicationKey={medicationKey}",
-                arguments = listOf(
-                    navArgument("medicationKey") {
-                        type = NavType.StringType
-                        nullable = true
-                    }
-                )*/
-            ) {
+            composable(route = Screen.MedicationSaveScreen.route) {
                 val viewModel = it.sharedViewModel<MedicationViewModel>(navController = navController)
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 MedicationScreen(
                     state = state,
                     onEvent = viewModel::onEvent,
                     onNavigateEvent = navigator::onNavigateEvent
+                )
+            }
+            composable(route = Screen.MedicationPaused.route) {
+                val viewModel = it.sharedViewModel<MedicationViewModel>(navController = navController)
+                val state by viewModel.state.collectAsStateWithLifecycle()
+                PausedMedications(
+                    state = state,
+                    onEvent = viewModel::onEvent,
+                    onNavigate = navigator::onNavigateEvent
                 )
             }
         }
@@ -140,8 +146,7 @@ fun Navigation(
                     factory = viewModelFactory {
                         DialysisViewModel(
                             repository = BaseApp.dialysisModule.dialysisRepository,
-                            sessionCache = BaseApp.sessionCache,
-                            onNavigateEvent = navigator::onNavigateEvent
+                            sessionCache = BaseApp.sessionCache
                         )
                     }
                 )
@@ -149,6 +154,7 @@ fun Navigation(
                 DialysisOverviewScreen(
                     state = state,
                     onEvent = viewModel::onEvent,
+                    onNavigate = navigator::onNavigateEvent,
                     modifier = Modifier.fillMaxSize())
             }
             composable(route = Screen.DialysisEntryScreen.route) {
@@ -156,7 +162,8 @@ fun Navigation(
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 DialysisEntryScreen(
                     state = state,
-                    onEvent = viewModel::onEvent
+                    onEvent = viewModel::onEvent,
+                    onNavigate = navigator::onNavigateEvent
                 )
             }
         }
@@ -171,15 +178,15 @@ fun Navigation(
                     factory = viewModelFactory {
                         FluidBalanceViewModel(
                             repository = BaseApp.fluidBalanceModule.fluidBalanceRepository,
-                            sessionCache = BaseApp.sessionCache,
-                            onNavigateEvent = navigator::onNavigateEvent
+                            sessionCache = BaseApp.sessionCache
                         )
                     }
                 )
                 val state by viewModel.state.collectAsStateWithLifecycle()
                 FluidBalanceScreen(
                     state = state,
-                    onEvent = viewModel::onEvent
+                    onEvent = viewModel::onEvent,
+                    onNavigate = navigator::onNavigateEvent
                 )
             }
 
@@ -189,7 +196,8 @@ fun Navigation(
 
                 UpdateFluidBalanceLimitScreen(
                     state = state,
-                    onEvent = viewModel::onEvent
+                    onEvent = viewModel::onEvent,
+                    onNavigate = navigator::onNavigateEvent
                 )
 
             }
@@ -200,7 +208,8 @@ fun Navigation(
 
                 FluidBalanceHistoryScreen(
                     state = state,
-                    onEvent = viewModel::onEvent
+                    onEvent = viewModel::onEvent,
+                    onNavigate = navigator::onNavigateEvent
                 )
             }
         }

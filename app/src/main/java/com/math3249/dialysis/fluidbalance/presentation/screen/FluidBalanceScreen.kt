@@ -40,7 +40,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.math3249.dialysis.R
 import com.math3249.dialysis.fluidbalance.domain.FluidBalanceEvent
 import com.math3249.dialysis.fluidbalance.presentation.FluidBalanceUiState
-import com.math3249.dialysis.other.Constants
+import com.math3249.dialysis.navigation.NavigateEvent
+import com.math3249.dialysis.navigation.Screen
 import com.math3249.dialysis.ui.components.DialysisAppBar
 import com.math3249.dialysis.ui.components.DialysisDropDownMenu
 import com.math3249.dialysis.ui.components.LabeledRadioButton
@@ -52,6 +53,7 @@ import kotlinx.coroutines.flow.update
 @Composable
 fun FluidBalanceScreen(
     state: FluidBalanceUiState,
+    onNavigate: (NavigateEvent) -> Unit,
     onEvent: (FluidBalanceEvent) -> Unit = {}
 ){
     val focusManager = LocalFocusManager.current
@@ -63,7 +65,7 @@ fun FluidBalanceScreen(
         DialysisAppBar(
             canNavigateBack = true,
             navigateUp = {
-               onEvent(FluidBalanceEvent.Back)
+               onNavigate(NavigateEvent.ToPrevious(Screen.StartScreen.route))
             },
             title = stringResource(R.string.screen_fluid_balance),
             menu = { expanded ->
@@ -73,7 +75,8 @@ fun FluidBalanceScreen(
                 FluidBalanceMenu(
                     expanded = expanded.collectAsStateWithLifecycle().value,
                     onDismiss = { expanded.update { false } },
-                    onEvent = onEvent
+                    onEvent = onEvent,
+                    onNavigate = onNavigate
                 )
             }
         )
@@ -84,60 +87,46 @@ fun FluidBalanceScreen(
         ) {
             LabeledRadioButton(
                 label = stringResource(R.string.water),
-                value = Constants.WATER,
-                selected = if ( state.selectedFluid == Constants.WATER ) {
-                   if (state.selectedText == "") {
-                       onEvent(FluidBalanceEvent
-                           .UpdateSelectedText(stringResource(R.string.water)))
-                   }
-                    true
-                }
-                else {
-                    false
-                },
+                value = R.string.water,
+                selected = state.selectedFluid == R.string.water,
                 fontSize = 12.sp,
-                onStateChange = { value, label ->
+                onStateChange = { value ->
                     onEvent(FluidBalanceEvent.UpdateSelectedFluid(value))
-                    onEvent(FluidBalanceEvent.UpdateSelectedText(label))
                 } )
             LabeledRadioButton(
                 label = stringResource(R.string.juice),
-                value = Constants.JUICE,
-                selected = state.selectedFluid == Constants.JUICE,
+                value = R.string.juice,
+                selected = state.selectedFluid == R.string.juice,
                 fontSize = 12.sp,
-                onStateChange = {value, label ->
+                onStateChange = {value ->
                     onEvent(FluidBalanceEvent.UpdateSelectedFluid(value))
-                    onEvent(FluidBalanceEvent.UpdateSelectedText(label))
                 } )
             LabeledRadioButton(
                 label = stringResource(R.string.dairy),
-                value = Constants.DAIRY,
-                selected = state.selectedFluid == Constants.DAIRY,
+                value = R.string.dairy,
+                selected = state.selectedFluid == R.string.dairy,
                 fontSize = 12.sp,
-                onStateChange = { value, label ->
+                onStateChange = { value->
                     onEvent(FluidBalanceEvent.UpdateSelectedFluid(value))
-                    onEvent(FluidBalanceEvent.UpdateSelectedText(label))
                 } )
             LabeledRadioButton(
                 label = stringResource(R.string.nutrition),
-                value = Constants.NUTRITION,
-                selected = state.selectedFluid == Constants.NUTRITION,
+                value = R.string.nutrition,
+                selected = state.selectedFluid == R.string.nutrition,
                 fontSize = 12.sp,
-                onStateChange = { value, label ->
+                onStateChange = { value->
                     onEvent(FluidBalanceEvent.UpdateSelectedFluid(value))
-                    onEvent(FluidBalanceEvent.UpdateSelectedText(label))
                 } )
             LabeledRadioButton(
                 label = stringResource(R.string.other),
-                value = Constants.OTHER,
-                selected = state.selectedFluid == Constants.OTHER,
+                value = R.string.other,
+                selected = state.selectedFluid == R.string.other,
                 fontSize = 12.sp,
-                onStateChange = { value, label ->
+                onStateChange = { value ->
                     onEvent(FluidBalanceEvent.UpdateSelectedFluid(value))
-                    onEvent(FluidBalanceEvent.UpdateSelectedText(label))
                 } )
         }
-        if (state.selectedFluid == Constants.OTHER){
+        if (state.selectedFluid == R.string.other){
             TextField(
                 value = state.otherText,
                 label = {
@@ -196,7 +185,7 @@ fun FluidBalanceScreen(
                     .background(MaterialTheme.colorScheme.background)
                     .clickable {
                         focusManager.clearFocus()
-                        onEvent(FluidBalanceEvent.EditFluidLimit)
+                        onNavigate(NavigateEvent.ToUpdateFluidBalanceLimit)
                     }
             )
         TextCard(
@@ -228,13 +217,16 @@ fun FluidBalanceScreen(
 private fun FluidBalanceMenu(
     expanded: Boolean,
     onEvent: (FluidBalanceEvent) -> Unit,
+    onNavigate: (NavigateEvent) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val resetText = stringResource(R.string.reset_message)
     val menuItems = listOf(
         MenuItemData(
             title = stringResource(R.string.reset),
             icon = Icons.Outlined.Refresh,
             onClick = {
+                onEvent(FluidBalanceEvent.UpdateOtherText(resetText))
                 onEvent(FluidBalanceEvent.Reset)
                 onDismiss()
             }
@@ -243,7 +235,7 @@ private fun FluidBalanceMenu(
             title = stringResource(R.string.history),
             icon = Icons.Outlined.History,
             onClick = {
-                onEvent(FluidBalanceEvent.SeeHistory)
+                onNavigate(NavigateEvent.ToFluidBalanceHistory)
             }
         ),
         MenuItemData(
@@ -254,7 +246,7 @@ private fun FluidBalanceMenu(
         MenuItemData(
             title = stringResource(R.string.logout),
             icon = Icons.Outlined.Logout,
-            onClick = { onEvent(FluidBalanceEvent.SignOut) }
+            onClick = { onNavigate(NavigateEvent.ToSignIn) }
         )
     )
     DialysisDropDownMenu(
@@ -382,11 +374,13 @@ fun EditDialog(
 @Composable
 @Preview
 fun FluidBalanceScreenPreview() {
-    FluidBalanceScreen(state = FluidBalanceUiState(
-        givenVolume = "150",
-        lastDrunkVolume = "75",
-        lastDrunkTime = "13:44",
-        volumeUnit = "ml"
-    )
+    FluidBalanceScreen(
+        state = FluidBalanceUiState(
+            givenVolume = "150",
+            lastDrunkVolume = "75",
+            lastDrunkTime = "13:44",
+            volumeUnit = "ml"
+        ),
+        onNavigate = {}
     )
 }

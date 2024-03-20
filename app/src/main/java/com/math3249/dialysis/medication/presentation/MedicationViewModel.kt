@@ -5,21 +5,23 @@ import androidx.lifecycle.viewModelScope
 import com.math3249.dialysis.medication.data.IMedication
 import com.math3249.dialysis.medication.data.Medication
 import com.math3249.dialysis.medication.domain.MedicationEvent
-import com.math3249.dialysis.navigation.NavigateEvent
+import com.math3249.dialysis.medication.domain.RecurrenceHelper
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.session.ISessionCache
 import com.math3249.dialysis.session.Session
+import com.math3249.dialysis.ui.components.model.Category
+import com.math3249.dialysis.util.DateTimeHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 class MedicationViewModel(
     private val repository: IMedication,
-    private val onNavigateEvent: (NavigateEvent ) -> Unit,
     sessionCache: ISessionCache
 ): ViewModel() {
     private val _state = MutableStateFlow(MedicationUiState())
@@ -41,33 +43,25 @@ class MedicationViewModel(
     ) {
         when(event) {
             is MedicationEvent.UpdateMedication -> updateMedication()
+            is MedicationEvent.UpdateMedicationState -> _state.update { it.copy(medication = event.value) }
             is MedicationEvent.CreateMedication -> saveMedication()
-            is MedicationEvent.SignOut -> onNavigateEvent(NavigateEvent.ToSignIn)
             is MedicationEvent.Clear -> clearMedicationSate()
-            is MedicationEvent.Back -> onNavigateEvent(NavigateEvent.ToPrevious)
             is MedicationEvent.Add -> newMedication()
-            is MedicationEvent.Edit -> getMedication(event.value)
-            is MedicationEvent.Pause -> pauseMedication(event.value)
-            is MedicationEvent.GetMedication -> getMedication()
-            is MedicationEvent.UpdateName -> _state.update { it.copy(name = event.value) }
-            is MedicationEvent.UpdateDose -> _state.update { it.copy(dose = event.value) }
-            is MedicationEvent.UpdateExpanded -> _state.update { it.copy(expanded = event.value) }
-            is MedicationEvent.UpdateSelectedValue -> _state.update { it.copy(selectedValue = event.value) }
-            is MedicationEvent.UpdateInterval -> _state.update { it.copy(interval = event.value) }
-            is MedicationEvent.UpdatePaused -> _state.update { it.copy(paused = event.value) }
-            is MedicationEvent.UpdateNeedPrep -> _state.update { it.copy(needPrep = event.value) }
-            is MedicationEvent.UpdatePrepDescription -> _state.update { it.copy(prepDescription = event.value) }
+            is MedicationEvent.Edit -> prepareEditState(event.value)
+            is MedicationEvent.TogglePause -> togglePauseMedication(event.value)
+            is MedicationEvent.Completed -> completeMedication(event.value)
+            is MedicationEvent.UpdateSelectedUnit -> _state.update { it.copy(selectedUnit = event.value) }
             is MedicationEvent.UpdateStartDate -> _state.update { it.copy(startDate = event.value) }
             is MedicationEvent.UpdateTime -> _state.update { it.copy(time = event.value) }
-            is MedicationEvent.UpdateMedicationKey -> _state.update { it.copy(medicationKey = event.value) }
-            is MedicationEvent.RemoveMedication -> removeMedication(event.value)
             else -> return
         }
     }
 
-    private fun pauseMedication(medication: Medication) {
+    private fun togglePauseMedication(medication: Medication) {
         viewModelScope.launch {
-            repository.updateMedication(medication.copy(paused = true), session.groupId)
+            repository.updateMedication(
+                medication.copy(paused = !medication.paused),
+                session.groupId)
         }
     }
 
@@ -79,7 +73,6 @@ class MedicationViewModel(
 
     private fun newMedication() {
         clearMedicationSate()
-        onNavigateEvent(NavigateEvent.ToMedicationSaveScreen)
     }
 
 
@@ -88,15 +81,28 @@ class MedicationViewModel(
             repository.getMedications(session.groupId).collect { result ->
                 when {
                     result.isSuccess -> {
-                        _state.value = _state.value.copy(
+                        _state.update { it.copy(
                             medications = result.getOrThrow()
-                                .filter {
-                                    !it.paused
+                                .filter { medication ->
+                                    !medication.paused &&
+                                            !DateTimeHelper.hasPassed(medication.lastCompleted)
                                 }
-                                .sortedBy { medication ->
-                                    medication.time
+                                .sortedBy { it.time }
+                                .groupBy { medication ->
+                                    medication.category
                                 }
-                                .toMutableList(),
+                                .map { mappedMedication ->
+                                    Category(
+                                        name = "",
+                                        nameAsInt = mappedMedication.key,
+                                        items = mappedMedication.value
+                                    )
+
+                                }
+                            /*.sortedBy { medication ->
+                                medication.time
+                            }
+                            .toMutableList()*/,
                             pausedMedications = result.getOrThrow()
                                 .filter {
                                     it.paused
@@ -105,7 +111,8 @@ class MedicationViewModel(
                                     it.time
                                 }
                                 .toMutableList()
-                        )
+                    )
+                        }
                     }
                     result.isFailure -> {
                         result.exceptionOrNull()?.printStackTrace()
@@ -114,87 +121,43 @@ class MedicationViewModel(
             }
         }
     }
-    private fun getMedication() {
-        viewModelScope.launch {
-            repository.getMedication(_state.value.medicationKey, session.groupId) {
-                _state.value = _state.value.copy(
-                    name = it.name,
-                    dose = it.dose,
-                    time = LocalTime.parse(it.time),
-                    startDate = LocalDate.parse(
-                        it.startDate,
-                        DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                    strength = it.strength,
-                    unit = it.unit,
-                    interval = it.interval,
-                    checkTimestamp = it.checkTimestamp,
-                    paused = it.paused,
-                    needPrep = it.needPrep,
-                    prepDescription = it.prepDescription
-                )
-            }
-        }
-    }
-    private fun getMedication(key: String) {
-        _state.update { it.copy(medicationKey = key) }
-        viewModelScope.launch {
-            repository.getMedication(key, session.groupId) {
-                _state.value = _state.value.copy(
-                    name = it.name,
-                    dose = it.dose,
-                    time = LocalTime.parse(it.time),
-                    startDate = LocalDate.parse(
-                        it.startDate,
-                        DateTimeFormatter.ofPattern("dd-MM-yyyy")),
-                    strength = it.strength,
-                    unit = it.unit,
-                    interval = it.interval,
-                    checkTimestamp = it.checkTimestamp,
-                    paused = it.paused,
-                    needPrep = it.needPrep,
-                    prepDescription = it.prepDescription
-                )
-            }
-            onNavigateEvent(NavigateEvent.ToMedicationSaveScreen)
-        }
+    private fun prepareEditState(medication: Medication) {
+        _state.update { it.copy(
+            medication = medication,
+            time = LocalTime.parse(medication.time),
+            startDate = LocalDate.from(
+                DateTimeFormatter
+                    .ofPattern(Constants.DATE_PATTERN)
+                    .parse(medication.startDate)
+            ),
+            selectedUnit = medication.recurrence
+
+        ) }
     }
     private fun clearMedicationSate() {
-        _state.value = _state.value.copy(
-            name = "",
-            dose = "",
-            unit = "",
-            strength = "",
-            interval = "",
-            startDate = LocalDate.now(),
-            time = LocalTime.NOON,
-            checkTimestamp = "",
-            prepDescription = "",
-            needPrep = false,
-            paused = false,
-            medicationKey = ""
-        )
+        _state.value = MedicationUiState()
     }
     private fun updateMedication() {
         viewModelScope.launch {
             repository.updateMedication(
-                Medication(
-                    key = _state.value.medicationKey,
-                    name = _state.value.name,
-                    dose = _state.value.dose,
-                    unit = _state.value.unit,
-                    strength = _state.value.strength,
-                    interval = _state.value.interval,
-                    startDate = DateTimeFormatter
-                        .ofPattern(Constants.DATE_PATTERN)
-                        .format(_state.value.startDate),
-                    time = DateTimeFormatter
-                        .ofPattern(Constants.TIME_24_H)
-                        .format(_state.value.time),
-                    checkTimestamp = _state.value.checkTimestamp,
-                    prepDescription = _state.value.prepDescription,
-                    needPrep = _state.value.needPrep,
-                    paused = _state.value.paused
-                ),
+                _state.value.medication,
+//                Medication(
+//                    key = _state.value.medicationKey,
+//                    name = _state.value.name,
+//                    dose = _state.value.dose,
+//                    unit = _state.value.selectedUnit,
+//                    strength = _state.value.strength,
+//                    recurrence = _state.value.recurrence,
+//                    startDate = DateTimeFormatter
+//                        .ofPattern(Constants.DATE_PATTERN)
+//                        .format(_state.value.startDate),
+//                    time = DateTimeFormatter
+//                        .ofPattern(Constants.TIME_24_H)
+//                        .format(_state.value.time),
+////                    lastCompleted = _state.value.checkTimestamp,
+//                    paused = _state.value.paused,
+//                    comment = _state.value.comment
+//                ),
                 session.groupId
             )
             clearMedicationSate()
@@ -203,25 +166,56 @@ class MedicationViewModel(
 
     private fun saveMedication() {
         viewModelScope.launch {
-            val medication = Medication(
-                name = _state.value.name,
-                unit = _state.value.unit,
-                strength = _state.value.strength,
-                interval = _state.value.interval,
-                time = DateTimeFormatter
-                    .ofPattern(Constants.TIME_24_H)
-                    .format(_state.value.time),
-                dose = _state.value.dose,
-                paused = _state.value.paused,
-                needPrep = _state.value.needPrep,
-                prepDescription = _state.value.prepDescription,
-                startDate = DateTimeFormatter
-                    .ofPattern(Constants.DATE_PATTERN)
-                    .format(_state.value.startDate),
-                key = ""
+            repository.createMedication(
+                RecurrenceHelper()
+                    .createMedicationForEveryRecurrenceOver24Hours(
+                        _state.value.medication.copy(
+                            startDate = DateTimeFormatter
+                                .ofPattern(Constants.DATE_PATTERN)
+                                .format(_state.value.startDate
+                            ),
+                            time = DateTimeFormatter
+                                .ofPattern(Constants.TIME_24_H)
+                                .format(_state.value.time
+                            )
+                        ),
+//                        Medication(
+//                            name = _state.value.name,
+//                            unit = _state.value.selectedUnit,
+//                            strength = _state.value.strength,
+//                            recurrence = _state.value.recurrence,
+//                            time = DateTimeFormatter
+//                                .ofPattern(Constants.TIME_24_H)
+//                                .format(_state.value.time),
+//                            dose = _state.value.dose,
+//                            paused = _state.value.paused,
+//                            startDate = DateTimeFormatter
+//                                .ofPattern(Constants.DATE_PATTERN)
+//                                .format(_state.value.startDate),
+//                            key = "",
+//                            comment = _state.value.comment,
+//                            lastCompleted = null,
+//                            takeWithFood = _state.value.takeWithFood,
+//                            withBreakfast = _state.value.withBreakfast,
+//                            withDinner = _state .value.withDinner,
+//                            withLunch = _state.value.withLunch,
+//                            category = _state.value.category
+//                        )
+                    ),
+                session.groupId
             )
-            repository.createMedication(medication, session.groupId)
             clearMedicationSate()
+        }
+    }
+
+    private fun completeMedication(medication: Medication) {
+        viewModelScope.launch {
+            repository.updateMedication(medication.copy(
+                lastCompleted = DateTimeHelper
+                    .dateTimeAsISOString(
+                        LocalDateTime.now()
+                    )
+            ), session.groupId)
         }
     }
 }

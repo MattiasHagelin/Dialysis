@@ -2,11 +2,11 @@ package com.math3249.dialysis.fluidbalance.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.math3249.dialysis.R
 import com.math3249.dialysis.fluidbalance.data.FluidBalance
 import com.math3249.dialysis.fluidbalance.data.FluidBalanceHistory
 import com.math3249.dialysis.fluidbalance.data.IFluidBalance
 import com.math3249.dialysis.fluidbalance.domain.FluidBalanceEvent
-import com.math3249.dialysis.navigation.NavigateEvent
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.session.ISessionCache
 import com.math3249.dialysis.session.Session
@@ -21,19 +21,19 @@ import java.time.format.DateTimeFormatter
 
 class FluidBalanceViewModel(
     private val repository: IFluidBalance,
-    sessionCache: ISessionCache,
-    private val onNavigateEvent: (NavigateEvent) -> Unit
+    sessionCache: ISessionCache
 ) :ViewModel(){
     private val _state = MutableStateFlow(FluidBalanceUiState())
+    private val _undoList = MutableStateFlow(mutableListOf(""))
 
     val state = _state.asStateFlow()
     private val session: Session?
 
     init {
         session = sessionCache.getActiveSession()
-        if (session == null) {
-            onNavigateEvent(NavigateEvent.ToSignInScreen)
-        }
+//        if (session == null) {
+//            onNavigateEvent(NavigateEvent.ToSignInScreen)
+//        }
 
         getFluidBalance()
         getFluidBalanceHistory()
@@ -41,25 +41,24 @@ class FluidBalanceViewModel(
 
     fun onEvent(event: FluidBalanceEvent) {
         when (event) {
-            is FluidBalanceEvent.SeeHistory -> onNavigateEvent(NavigateEvent.ToFluidBalanceHistory)
             is FluidBalanceEvent.ClearHistory -> clearHistory()
             is FluidBalanceEvent.UpdateFluidLimit -> updateFluidLimit()
-            is FluidBalanceEvent.EditFluidLimit -> onNavigateEvent(NavigateEvent.ToUpdateFluidBalanceLimit)
             is FluidBalanceEvent.UpdateEditFluidLimit -> _state.update { it.copy(editFluidLimit = event.value ) }
             is FluidBalanceEvent.UpdateGivenVolume -> _state.update { it.copy(givenVolume = event.value) }
             is FluidBalanceEvent.UpdateShowDialog -> _state.update { it.copy(showDialog = event.value) }
             is FluidBalanceEvent.UpdateOtherText -> _state.update { it.copy(otherText = event.value) }
             is FluidBalanceEvent.UpdateSelectedFluid -> _state.update { it.copy(selectedFluid = event.value) }
-            is FluidBalanceEvent.Reset -> reset()
+            is FluidBalanceEvent.Reset -> {
+                reset()
+                updateHistory(LocalDateTime.now(), true)
+                clear()
+            }
             is FluidBalanceEvent.UpdateDrunkVolume -> {
                 val timeStamp = LocalDateTime.now()
                 addDrunkVolume(timeStamp)
                 updateHistory(timeStamp)
                 clear()
             }
-            is FluidBalanceEvent.UpdateSelectedText -> _state.update { it.copy(selectedText = event.value) }
-            is FluidBalanceEvent.Back -> onNavigateEvent(NavigateEvent.ToPrevious)
-            is FluidBalanceEvent.SignOut -> onNavigateEvent(NavigateEvent.ToSignIn)
         }
     }
 
@@ -70,7 +69,7 @@ class FluidBalanceViewModel(
                     result.isSuccess -> {
                         _state.update { it.copy(history = result.getOrThrow()
                             .groupBy { history ->
-                                DateTimeHelper.formatIsoDateTimeString(history.drunkTimeStamp, Constants.DATE_PATTERN)
+                               DateTimeHelper.formatIsoDateTimeString(history.drunkTimeStamp, Constants.DATE_PATTERN)
                             }
                             .map { mappedHistory ->
                                 Category(
@@ -128,8 +127,7 @@ class FluidBalanceViewModel(
         _state.value = _state.value.copy(
             givenVolume = "",
             otherText = "",
-            selectedFluid = Constants.WATER,
-            selectedText = "",
+            selectedFluid = R.string.water,
             volumeUnit = ""
         )
     }
@@ -153,19 +151,33 @@ class FluidBalanceViewModel(
         }
     }
 
-    private fun updateHistory(timeStamp: LocalDateTime) {
+    private fun updateHistory(
+        timeStamp: LocalDateTime,
+        isReset: Boolean = false
+    ) {
         viewModelScope.launch {
-            val volume = _state.value.givenVolume.toIntOrNull()
-            if (volume != null) {
+            if (isReset) {
                 val history = FluidBalanceHistory(
-                    drunkVolume = volume,
+                    drunkVolume = "",
+                    drunkTimeStamp = DateTimeHelper.dateTimeAsISOString(timeStamp),
+                    fluidType = R.string.reset_message,
+                    extraText = ""
+                )
+                repository.updateConsumedHistory(
+                    history,
+                    session!!.groupId
+                )
+            } else {
+                val history = FluidBalanceHistory(
+                    drunkVolume = _state.value.givenVolume,
                     drunkTimeStamp = DateTimeFormatter
                         .ISO_DATE_TIME
                         .format(timeStamp),
-                    fluidType = if (_state.value.selectedFluid == Constants.OTHER) {
+                    fluidType = _state.value.selectedFluid,
+                    extraText = if (_state.value.selectedFluid == R.string.other) {
                         _state.value.otherText
                     } else {
-                        _state.value.selectedText
+                        ""
                     }
                 )
                 repository.updateConsumedHistory(
@@ -181,10 +193,8 @@ class FluidBalanceViewModel(
             if (volume != null) {
                 repository.updateFluidLimit(volume, session!!.groupId)
                 clear()
-                onNavigateEvent(NavigateEvent.ToPrevious)
+//                onNavigateEvent(NavigateEvent.ToPrevious)
             }
         }
     }
-
-
 }

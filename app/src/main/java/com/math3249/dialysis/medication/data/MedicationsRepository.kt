@@ -100,16 +100,19 @@ class MedicationsRepository(
             .removeValue()
     }
 
-    override suspend fun createMedication(medication: Medication, groupId: String) {
-        val key = group.child(Constants.TABLE_MEDICATIONS).push().key
+    override suspend fun createMedication(medications: List<Medication>, groupId: String) {
+        medications.forEach {
+            val key = group.child(Constants.TABLE_MEDICATIONS).push().key
+            if (key != null) {
+                group.child(groupId)
+                    .child(Constants.TABLE_MEDICATIONS)
+                    .child(key)
+                    .setValue(
+                        it.copy(key = key)
+                    )
+            }
 
-        if (key != null) {
-            group.child(groupId)
-                .child(Constants.TABLE_MEDICATIONS)
-                .child(key)
-                .setValue(
-                    medication.copy(key = key)
-                )
         }
+
     }
 }

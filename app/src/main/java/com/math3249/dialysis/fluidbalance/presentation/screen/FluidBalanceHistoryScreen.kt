@@ -17,7 +17,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.math3249.dialysis.R
 import com.math3249.dialysis.fluidbalance.domain.FluidBalanceEvent
 import com.math3249.dialysis.fluidbalance.presentation.FluidBalanceUiState
-import com.math3249.dialysis.ui.components.CategorizedLacyColumn
+import com.math3249.dialysis.navigation.NavigateEvent
+import com.math3249.dialysis.navigation.Screen
+import com.math3249.dialysis.ui.components.CategorizedLazyColumn
 import com.math3249.dialysis.ui.components.DialysisAppBar
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.iconTitle
@@ -28,13 +30,14 @@ import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 fun FluidBalanceHistoryScreen(
     state: FluidBalanceUiState = FluidBalanceUiState(),
     modifier: Modifier = Modifier,
-    onEvent: (FluidBalanceEvent) -> Unit = {},
+    onEvent: (FluidBalanceEvent) -> Unit,
+    onNavigate: (NavigateEvent) -> Unit
 ) {
     val deleteDialogState = rememberMaterialDialogState()
     Column {
         DialysisAppBar(
             canNavigateBack = true,
-            navigateUp = { onEvent(FluidBalanceEvent.Back) },
+            navigateUp = { onNavigate(NavigateEvent.ToPrevious(Screen.FluidBalanceDayScreen.route)) },
             title = stringResource(R.string.screen_fluid_balance_history),
             saveAction = {
                 IconButton(
@@ -47,7 +50,7 @@ fun FluidBalanceHistoryScreen(
             }
         )
         if (state.history.isNotEmpty()) {
-            CategorizedLacyColumn(categories = state.history)
+            CategorizedLazyColumn(categories = state.history)
         } else {
             Box(
                 modifier = modifier
@@ -87,6 +90,8 @@ fun FluidBalanceHistoryScreen(
 @Preview
 fun FluidBalanceHistoryScreenPreview() {
     FluidBalanceHistoryScreen(
-        state = FluidBalanceUiState()
+        state = FluidBalanceUiState(),
+        onEvent = {},
+        onNavigate = {}
     )
 }

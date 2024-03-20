@@ -64,4 +64,23 @@
     <string name="create_required_data">Skapa nödvändig data</string>
     <string name="share_data_token">Token för datadelning</string>
     <string name="share_data_token_info">Om du fått inbjudan skriv datatoken här.</string>
+    <string name="reset_message">Vätskebalans nollställd.</string>
+    <string name="pause_message">%1$s pausades.</string>
+    <string name="paused">Pausad</string>
+    <string name="paused_medications">Pausade mediciner</string>
+    <string name="activated_message">%1$s aktiverades.</string>
+    <string name="preparation_needed">Behöver förberedas</string>
+    <string name="take_with_food">Tas med mat</string>
+    <string name="dont_take_with_food">Tas utan mat</string>
+    <string name="medication_comment">Kommentar</string>
+    <string name="strength">Styrka</string>
+    <string name="recurrence">Upprepas</string>
+    <string name="time">Tid</string>
+    <string name="start_date">Startdatum</string>
+    <string name="unit">Enhet</string>
+    <string name="dose">Dos</string>
+    <string name="name">Namn</string>
+    <string name="breakfast">Frukost</string>
+    <string name="lunch">Lunch</string>
+    <string name="dinner">Middag</string>
 </resources>

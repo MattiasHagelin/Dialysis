@@ -15,19 +15,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.math3249.dialysis.R
 import com.math3249.dialysis.fluidbalance.data.FluidBalanceHistory
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.ui.components.model.Category
 import com.math3249.dialysis.util.DateTimeHelper
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun <T> CategorizedLacyColumn(
+fun <T> CategorizedLazyColumn(
     categories: List<Category<T>>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier) {
         categories.forEach { category ->
@@ -45,7 +48,7 @@ fun <T> CategorizedLacyColumn(
     }
 }
 @Composable
-private fun CategoryHeader(
+fun CategoryHeader(
     title: String,
     modifier: Modifier = Modifier
 ) {
@@ -89,11 +92,18 @@ private fun FluidBalanceHistoryRow(
                 .formatIsoDateTimeString(
                     item.drunkTimeStamp,
                     Constants.TIME_24_H
-                ) +
+            ) + if(item.fluidType != R.string.reset_message) {
                 " " + item.drunkVolume +
-                " " + item.volumeUnit +
-                " " + item.fluidType
-            )
+                " " + item.volumeUnit
+            } else {
+                ""
+            }
+            + " " + if (item.fluidType == R.string.other) {
+                item.extraText
+            } else {
+                stringResource(item.fluidType)
+            }
+        )
     }
 }
 

@@ -1,38 +1,52 @@
 package com.math3249.dialysis.medication.presentation.screen
 
+import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Pause
+import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.Save
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.math3249.dialysis.R
+import com.math3249.dialysis.medication.data.Medication
 import com.math3249.dialysis.medication.domain.MedicationEvent
 import com.math3249.dialysis.medication.presentation.MedicationUiState
 import com.math3249.dialysis.navigation.NavigateEvent
+import com.math3249.dialysis.navigation.Screen
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.ui.components.DialysisAppBar
+import com.math3249.dialysis.ui.components.ExposedDropdownMenu
 import com.math3249.dialysis.ui.components.LabeledCheckbox
+import com.math3249.dialysis.ui.components.NumberField
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
+import com.vanpra.composematerialdialogs.listItemsSingleChoice
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.time.LocalDate
 import java.time.LocalTime
@@ -46,6 +60,7 @@ fun MedicationScreen(
 ) {
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
+    val recurrenceDialogState = rememberMaterialDialogState()
     Column (
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -56,21 +71,42 @@ fun MedicationScreen(
             canNavigateBack = true,
             navigateUp = {
                 onEvent(MedicationEvent.Clear)
-                onNavigateEvent(NavigateEvent.ToPrevious)
+                onNavigateEvent(NavigateEvent.ToPrevious(Screen.MedicationOverview.route))
 
             },
-            title = if (state.medicationKey != "") {
+            title = if (state.medication.key != "") {
                 stringResource(R.string.update_medication)
             } else {
                 stringResource(R.string.add_medication)
             },
             saveAction = {
+                if (state.medication.key != "") {
+                    val context = LocalContext.current
+                    val pauseMessage = stringResource(R.string.pause_message, state.medication.name)
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
+                    }
+                    IconButton(onClick = {
+                        Toast
+                            .makeText(
+                                context,
+                                pauseMessage,
+                                Toast.LENGTH_LONG
+                            )
+                            .show()
+                        onEvent(MedicationEvent.TogglePause(state.medication))
+                        onNavigateEvent(NavigateEvent.ToPrevious(Screen.MedicationOverview.route))
+                    }
+                    ) {
+                        Icon(imageVector = Icons.Outlined.Pause, contentDescription = null)
+                    }
+                }
                 IconButton(onClick = {
-                    if (state.medicationKey != "")
+                    if (state.medication.key != "")
                         onEvent(MedicationEvent.UpdateMedication)
                     else
                         onEvent(MedicationEvent.CreateMedication)
-                    onNavigateEvent(NavigateEvent.ToPrevious)
+                    onNavigateEvent(NavigateEvent.ToPrevious(Screen.MedicationOverview.route))
                 }) {
                     Icon(imageVector = Icons.Outlined.Save, contentDescription = null)
                 }
@@ -78,88 +114,91 @@ fun MedicationScreen(
             }
         )
         Row {
-            OutlinedTextField(
-                value = state.name,
+            TextField(
+                value = state.medication.name,
                 onValueChange = {
-                    onEvent(MedicationEvent.UpdateName(it))
+                    onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(name = it)))
                 },
                 singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContainerColor = MaterialTheme.colorScheme.background
+                ),
                 label = {
-                    Text(text = "Name")
+                    Text(stringResource(R.string.name))
                 },
-                shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
-                    .padding(start = 5.dp, end = 5.dp)
+                    .padding(horizontal = 15.dp)
                     .weight(1f)
             )
         }
         Row {
-            OutlinedTextField(
-                value = state.dose,
+            TextField(
+                value = state.medication.dose,
                 onValueChange = {
-                    onEvent(MedicationEvent.UpdateDose(it))
+                    onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(dose = it)))
                 },
                 singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContainerColor = MaterialTheme.colorScheme.background
+                ),
                 label = {
-                    Text(text = "Dose")
+                    Text(stringResource(R.string.dose))
                 },
-                shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
-                    .padding(start = 5.dp, end = 5.dp)
-                    .weight(2f)
+                    .padding(horizontal = 15.dp)
+                    .weight(0.5f)
             )
-//            TODO fix the SelectText
-//            SelectTextField(
-//                value = state.selectedValue,
-//                label = "Unit",
-//                onValueChange = {},
-//                onDismissRequest = {
-//                    onEvent(MedicationEvent.UpdateExpanded(false))
-//               },
-//                items = listOf {
-//                    DropdownMenuItem(
-//                        text = {
-//                            Text("ml") },
-//                        onClick = {
-//                            onEvent(MedicationEvent.UpdateSelectedValue("ml"))
-//                            onEvent(MedicationEvent.UpdateExpanded(false))
-//                        }
-//                    )
-//                    DropdownMenuItem(
-//                        text = {
-//                            Text("g") },
-//                        onClick = {
-//                            onEvent(MedicationEvent.UpdateSelectedValue("g"))
-//                            onEvent(MedicationEvent.UpdateExpanded(false))
-//                        }
-//                    )
-//                    DropdownMenuItem(
-//                        text = {
-//                            Text("tablett") },
-//                        onClick = {
-//                            onEvent(MedicationEvent.UpdateSelectedValue("tablett"))
-//                            onEvent(MedicationEvent.UpdateExpanded(false))
-//                        }
-//                    )
-//                },
-//                modifier = Modifier
-//                    .padding(start = 5.dp, end = 5.dp)
-//                    .weight(1f)
-//            )
-
+            ExposedDropdownMenu(
+                value = state.selectedUnit,
+                label = stringResource(R.string.unit),
+                items = listOf {expanded ->
+                    stringArrayResource(R.array.dose_units).forEach {item ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(item)
+                            },
+                            onClick = {
+                                onEvent(MedicationEvent.UpdateSelectedUnit(item))
+                                expanded.value = false
+                            }
+                        )
+                        
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+            )
         }
         Row {
-            OutlinedTextField(
+            TextField(
                 value = DateTimeFormatter
                     .ofPattern(Constants.DATE_PATTERN)
                     .format(state.startDate),
                 onValueChange = {},
                 singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContainerColor = MaterialTheme.colorScheme.background,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    //For Icons
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
                 readOnly = true,
+                enabled = false,
                 label = {
-                    Text(text = "Start date")
+                    Text(stringResource(R.string.start_date))
                 },
-                shape = RoundedCornerShape(8.dp),
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.CalendarMonth,
@@ -171,85 +210,209 @@ fun MedicationScreen(
                     )
                 },
                 modifier = Modifier
-                    .padding(start = 5.dp, end = 5.dp)
-                    .weight(2f)
+                    .padding(horizontal = 15.dp)
+                    .weight(1.5f)
+                    .clickable {
+                        dateDialogState.show()
+                    }
             )
-            OutlinedTextField(
+            TextField(
                 value = DateTimeFormatter
                     .ofPattern(Constants.TIME_24_H)
                     .format(state.time),
                 onValueChange = {},
                 singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContainerColor = MaterialTheme.colorScheme.background,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    //For Icons
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
                 readOnly = true,
+                enabled = false,
                 label = {
-                    Text(text = "Time")
+                    Text(stringResource(R.string.time))
                 },
                 trailingIcon = {
                     Icon(
                         imageVector = Icons.Outlined.AccessTime,
-                        contentDescription = "Time",
+                        contentDescription = null,
                         modifier = Modifier
                             .clickable {
                                 timeDialogState.show()
                             }
                     )
                 },
-                shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
-                    .padding(start = 5.dp, end = 5.dp)
+                    .padding(horizontal = 15.dp)
                     .weight(1f)
+                    .clickable {
+                        timeDialogState.show()
+                    }
             )
         }
         Row {
-            OutlinedTextField(
-                value = state.interval,
-                onValueChange = {
-                    onEvent(MedicationEvent.UpdateInterval(it))
+            TextField(
+                value = state.medication.recurrence,
+                onValueChange = {},
+                singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContainerColor = MaterialTheme.colorScheme.background,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    //For Icons
+                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
+                ),
+                readOnly = true,
+                enabled = false,
+                label = {
+                    Text(stringResource(R.string.recurrence))
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.Outlined.Replay,
+                        contentDescription = "Calendar",
+                        modifier = Modifier
+                            .clickable {
+                                recurrenceDialogState.show()
+                            }
+                    )
+                },
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .weight(1.5f)
+                    .clickable {
+                        recurrenceDialogState.show()
+                    }
+            )
+//            TextField(
+//                value = state.recurrence,
+//                onValueChange = {
+//                    onEvent(MedicationEvent.UpdateRecurrence(it))
+//                },
+//                singleLine = true,
+//                colors = TextFieldDefaults.colors(
+//                    focusedContainerColor = MaterialTheme.colorScheme.background,
+//                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+//                    disabledContainerColor = MaterialTheme.colorScheme.background
+//                ),
+//                label = {
+//                    Text(stringResource(R.string.recurrence))
+//                },
+//                modifier = Modifier
+//                    .padding(horizontal = 15.dp)
+//                    .weight(1f)
+//            )
+        }
+        Row {
+            NumberField(
+                value = state.medication.strength,
+                onValueChanged = {
+                    onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(strength = it)))
                 },
                 singleLine = true,
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContainerColor = MaterialTheme.colorScheme.background
+                ),
                 label = {
-                    Text(text = "Interval")
+                    Text(stringResource(R.string.strength))
                 },
-                shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
-                    .padding(start = 5.dp, end = 5.dp)
+                    .padding(horizontal = 15.dp)
                     .weight(1f)
             )
         }
         Row {
-            LabeledCheckbox(
-                label = "Paused",
-                state = state.paused,
-                onStateChange = {
-                    onEvent(MedicationEvent.UpdatePaused(it))
+            Column {
+                LabeledCheckbox(
+                    label = stringResource(R.string.take_with_food),
+                    state = state.medication.takeWithFood,
+                    onStateChange = {
+                        onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(takeWithFood = it)))
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp)
+                )
+                AnimatedVisibility(visible = state.medication.takeWithFood) {
+                    Column {
+                        LabeledCheckbox(
+                            label = stringResource(R.string.breakfast),
+                            state = state.medication.withBreakfast,
+                            onStateChange = {
+                            onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(withBreakfast = it)))
+                            },
+                            modifier = Modifier
+                                .padding(horizontal = 30.dp)
+                        )
+                        LabeledCheckbox(
+                            label = stringResource(R.string.lunch),
+                            state = state.medication.withLunch,
+                            onStateChange = {
+                            onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(withLunch = it)))
+                            },
+                            modifier = Modifier
+                                .padding(horizontal = 30.dp)
+                        )
+                        LabeledCheckbox(
+                            label = stringResource(R.string.dinner),
+                            state = state.medication.withDinner,
+                            onStateChange = {
+                            onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(withDinner = it)))
+                            },
+                            modifier = Modifier
+                                .padding(horizontal = 30.dp)
+                        )
+                    }
                 }
-            )
+            }
         }
         Row {
             LabeledCheckbox(
-                label = "Preparation needed",
-                state = state.needPrep,
+                label = stringResource(R.string.dont_take_with_food),
+                state = state.medication.doNotTakeWithFood,
                 onStateChange = {
-                    onEvent(MedicationEvent.UpdateNeedPrep(it))
-                }
+                    onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(doNotTakeWithFood = it)))
+                },
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
             )
         }
-        if (state.needPrep) {
-            Row {
-                OutlinedTextField(
-                    value = state.prepDescription,
-                    onValueChange = {
-                        onEvent(MedicationEvent.UpdatePrepDescription(it))
-                    },
-                    label = {
-                        Text(text = "Preparation Description")
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier
-                        .padding(start = 5.dp, end = 5.dp)
-                        .weight(1f)
-                )
-            }
+        Row {
+            TextField(
+                value = state.medication.comment,
+                onValueChange = {
+                    onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(comment = it)))
+                },
+                label = {
+                    Text(stringResource(R.string.medication_comment))
+                },
+                colors = TextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.background,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
+                    disabledContainerColor = MaterialTheme.colorScheme.background
+                ),
+                maxLines = 5,
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .weight(1f)
+            )
         }
     }
 
@@ -284,6 +447,24 @@ fun MedicationScreen(
             onEvent(MedicationEvent.UpdateTime(it))
         }
     }
+    val recurrenceOptions = stringArrayResource(R.array.recurrence_interval).toList()
+    MaterialDialog (
+        dialogState = recurrenceDialogState
+    ) {
+        this.listItemsSingleChoice(
+            list = recurrenceOptions,
+            initialSelection = 0,
+            onChoiceChange = {
+                if (it == recurrenceOptions.size - 1) {
+                    onNavigateEvent(NavigateEvent.ToPrevious(Screen.MedicationOverview.route))
+                } else {
+                    onEvent(MedicationEvent.UpdateMedicationState(state.medication.copy(recurrence = recurrenceOptions[it])))
+                }
+                recurrenceDialogState.hide()
+            },
+            waitForPositiveButton = false
+        )
+    }
 }
 
 @Composable
@@ -292,9 +473,11 @@ fun MedicationScreenPreview(){
     val navController = rememberNavController()
     MedicationScreen(
         state = MedicationUiState(
-            name = "Hello World",
+            medication = Medication(
+                name = "Hello World",
+                recurrence = "100y"
+            ),
             time = LocalTime.MIDNIGHT,
-            interval = "100y"
         ),
         onEvent = {}
     )

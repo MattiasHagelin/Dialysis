@@ -1,8 +1,8 @@
 package com.math3249.dialysis.fluidbalance.presentation
 
 import androidx.compose.ui.focus.FocusRequester
+import com.math3249.dialysis.R
 import com.math3249.dialysis.fluidbalance.data.FluidBalanceHistory
-import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.ui.components.model.Category
 
 data class FluidBalanceUiState(
@@ -18,6 +18,5 @@ data class FluidBalanceUiState(
     val lastDrunkVolume: String = "",
     val otherText: String = "",
     val editFluidLimit: String = "",
-    val selectedFluid: String = Constants.WATER,
-    val selectedText: String = ""
+    val selectedFluid: Int = R.string.water
 )

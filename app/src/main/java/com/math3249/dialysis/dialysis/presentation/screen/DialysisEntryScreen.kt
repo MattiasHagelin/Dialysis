@@ -25,15 +25,18 @@ import androidx.core.graphics.toColorInt
 import com.math3249.dialysis.R
 import com.math3249.dialysis.dialysis.domain.DialysisEvent
 import com.math3249.dialysis.dialysis.presentation.DialysisUiState
+import com.math3249.dialysis.navigation.NavigateEvent
+import com.math3249.dialysis.navigation.Screen
 import com.math3249.dialysis.ui.components.DialysisAppBar
-import com.math3249.dialysis.ui.components.dialysisProgramBackgroundBrush
 import com.math3249.dialysis.ui.components.NumberField
 import com.math3249.dialysis.ui.components.SelectTextField
+import com.math3249.dialysis.ui.components.dialysisProgramBackgroundBrush
 
 @Composable
 fun DialysisEntryScreen(
     state: DialysisUiState = DialysisUiState(),
-    onEvent: (DialysisEvent) -> Unit = {},
+    onEvent: (DialysisEvent) -> Unit,
+    onNavigate: (NavigateEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column (
@@ -45,7 +48,7 @@ fun DialysisEntryScreen(
             canNavigateBack = true,
             navigateUp = {
                 onEvent(DialysisEvent.Clear)
-                onEvent(DialysisEvent.Back)
+                onNavigate(NavigateEvent.ToPrevious(Screen.DialysisOverviewScreen.route))
             },
             title = if (state.itemKey != "") {
                 stringResource(R.string.update_dialysis_entry)
@@ -61,6 +64,7 @@ fun DialysisEntryScreen(
                         } else {
                             onEvent(DialysisEvent.CreateEntry)
                         }
+                        onNavigate(NavigateEvent.ToPrevious(Screen.DialysisOverviewScreen.route))
                     }
                 ) {
                     Icon(imageVector = Icons.Outlined.Save, contentDescription = null)
@@ -107,50 +111,50 @@ fun DialysisEntryScreen(
                 .background(MaterialTheme.colorScheme.background)
         )
         SelectTextField(
-                value = state.selectedProgram,
-                label = stringResource(R.string.header_select_program),
-                onValueChange = {},
-                onDismissRequest = {
-                    it.value = false
-                },
-                items = listOf { expanded ->
-                    state.programs.forEach { program ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = program.time,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(5.dp)
-                                )
-                            },
-                            onClick = {
-                                onEvent(DialysisEvent.UpdateSelectedProgram(program.name))
-                                expanded.value = false
-                            },
-                            modifier = Modifier
-                                .background(
-                                    brush = dialysisProgramBackgroundBrush(
-                                        isVerticalGradient = false,
-                                        colors = program.dialysisFluids.map {
-                                            Color(it.toColorInt())
-                                        }
-                                    ),
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                                .padding(3.dp)
-                        )
-
-                    }
-                    Divider(
-                        color = Color.White,
-                        thickness = 1.dp
+            value = state.selectedProgram,
+            label = stringResource(R.string.header_select_program),
+            onValueChange = {},
+            onDismissRequest = {
+                it.value = false
+            },
+            items = listOf { expanded ->
+                state.programs.forEach { program ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = program.time,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(5.dp)
+                            )
+                        },
+                        onClick = {
+                            onEvent(DialysisEvent.UpdateSelectedProgram(program.name))
+                            expanded.value = false
+                        },
+                        modifier = Modifier
+                            .background(
+                                brush = dialysisProgramBackgroundBrush(
+                                    isVerticalGradient = false,
+                                    colors = program.dialysisFluids.map {
+                                        Color(it.toColorInt())
+                                    }
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            )
+                            .padding(3.dp)
                     )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+
+                }
+                Divider(
+                    color = Color.White,
+                    thickness = 1.dp
+                )
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+        )
     }
 }
 
@@ -161,5 +165,6 @@ fun DialysisEntryScreenPreview() {
         state = DialysisUiState(
             weightAfter = "137"
         ),
-        onEvent ={} )
+        onEvent ={},
+        onNavigate = {})
 }

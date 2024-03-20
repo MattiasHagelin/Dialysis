@@ -2,6 +2,7 @@ package com.math3249.dialysis
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,10 +41,17 @@ class MainActivity : ComponentActivity() {
                     Navigation(
                         googleAuthUiClient
                     )
+                    Log.i("MatH_MainActivity", "Navigation created!")
                 }
             }
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i("MatH_MainActivity", "destroyed")
+    }
+
 
 
     private fun signOut(navController: NavHostController) {

@@ -83,5 +83,40 @@
     <string name="share">Share</string>
     <string name="create_required_data">Create required data</string>
     <string name="share_data_token">Share data token</string>
-    <string name="share_data_token_info">If you have recieved an invite add token here.</string>
+    <string name="share_data_token_info">If you have received an invite add token here.</string>
+    <string name="reset_message">Fluid balance reset.</string>
+    <string name="pause_message">%1$s was paused.</string>
+    <string name="paused">Paused</string>
+    <string name="paused_medications">Paused medications</string>
+    <string name="activated_message">%1$s was activated.</string>
+    <string name="preparation_needed">Needs preparation</string>
+    <string name="take_with_food">Take with food</string>
+    <string name="dont_take_with_food">Don\'t take with food</string>
+    <string name="medication_comment">Comment</string>
+    <string name="strength">Strength</string>
+    <string name="recurrence">Recurrence</string>
+    <string name="time">Time</string>
+    <string name="start_date">Start date</string>
+    <string name="unit">Unit</string>
+    <string name="dose">Dose</string>
+    <string name="name">Name</string>
+    <string name="breakfast">Breakfast</string>
+    <string name="lunch">Lunch</string>
+    <string name="dinner">Dinner</string>
+
+    <string-array name="dose_units">
+        <item>g</item>
+        <item>ml</item>
+        <item>pill</item>
+        <item>dose bag</item>
+    </string-array>
+
+    <string-array name="recurrence_interval">
+        <item>4h</item>
+        <item>6h</item>
+        <item>8h</item>
+        <item>12h</item>
+        <item>24h</item>
+        <item>Custom</item>
+    </string-array>
 </resources>

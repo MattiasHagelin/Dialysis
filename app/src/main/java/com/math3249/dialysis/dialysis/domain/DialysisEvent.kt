@@ -12,8 +12,8 @@ sealed class DialysisEvent {
     data object CreateEntry: DialysisEvent()
     data object DeleteEntry: DialysisEvent()
     data object Clear: DialysisEvent()
-    data object Back: DialysisEvent()
+//    data object Back: DialysisEvent()
     data object Add: DialysisEvent()
     data class Edit(val value: String): DialysisEvent()
-    data object SignOut: DialysisEvent()
+//    data object SignOut: DialysisEvent()
 }

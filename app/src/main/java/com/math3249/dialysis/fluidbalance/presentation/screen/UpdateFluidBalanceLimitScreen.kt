@@ -19,13 +19,16 @@ import androidx.compose.ui.unit.dp
 import com.math3249.dialysis.R
 import com.math3249.dialysis.fluidbalance.domain.FluidBalanceEvent
 import com.math3249.dialysis.fluidbalance.presentation.FluidBalanceUiState
+import com.math3249.dialysis.navigation.NavigateEvent
+import com.math3249.dialysis.navigation.Screen
 import com.math3249.dialysis.ui.components.DialysisAppBar
 import com.math3249.dialysis.ui.components.NumberField
 
 @Composable
 fun UpdateFluidBalanceLimitScreen(
     state: FluidBalanceUiState = FluidBalanceUiState(),
-    onEvent: (FluidBalanceEvent) -> Unit = {}
+    onEvent: (FluidBalanceEvent) -> Unit,
+    onNavigate: (NavigateEvent) -> Unit
 ) {
     Column (
         modifier = Modifier
@@ -35,12 +38,13 @@ fun UpdateFluidBalanceLimitScreen(
         DialysisAppBar(
             canNavigateBack = true,
             navigateUp = {
-                onEvent(FluidBalanceEvent.Back)
+                onNavigate(NavigateEvent.ToPrevious(Screen.FluidBalanceDayScreen.route))
             },
             title = stringResource(R.string.header_update_fluid_limit),
             saveAction = {
                 IconButton(onClick = {
                     onEvent(FluidBalanceEvent.UpdateFluidLimit)
+                    onNavigate(NavigateEvent.ToPrevious(Screen.FluidBalanceDayScreen.route))
                 }) {
                     Icon(
                         imageVector = Icons.Outlined.Save,
@@ -69,5 +73,8 @@ fun UpdateFluidBalanceLimitScreen(
 @Composable
 @Preview
 fun UpdateFluidBalanceLimitScreenPreview() {
-    UpdateFluidBalanceLimitScreen()
+    UpdateFluidBalanceLimitScreen(
+        onNavigate = {},
+        onEvent = {}
+    )
 }

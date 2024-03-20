@@ -7,5 +7,5 @@ interface IMedication {
     suspend fun getMedication(key: String, groupId: String, callback: (Medication) -> Unit)
     suspend fun updateMedication(medication: Medication, groupId: String)
     suspend fun deleteMedication(key: String, groupId: String)
-    suspend fun createMedication(medication: Medication, groupId: String)
+    suspend fun createMedication(medications: List<Medication>, groupId: String)
 }

@@ -6,7 +6,6 @@ import com.math3249.dialysis.dialysis.data.DialysisEntry
 import com.math3249.dialysis.dialysis.data.DialysisProgram
 import com.math3249.dialysis.dialysis.data.IDialysis
 import com.math3249.dialysis.dialysis.domain.DialysisEvent
-import com.math3249.dialysis.navigation.NavigateEvent
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.session.ISessionCache
 import com.math3249.dialysis.session.Session
@@ -17,8 +16,7 @@ import kotlinx.coroutines.launch
 
 class DialysisViewModel(
     private val repository: IDialysis,
-    private val sessionCache: ISessionCache,
-    private val onNavigateEvent: (NavigateEvent) -> Unit
+    private val sessionCache: ISessionCache
 ): ViewModel() {
     private val _state = MutableStateFlow(DialysisUiState())
     val state = _state.asStateFlow()
@@ -44,17 +42,14 @@ class DialysisViewModel(
             is DialysisEvent.GetDialysisEntry -> getDialysisEntry()
             is DialysisEvent.CreateEntry -> addEntry()
             is DialysisEvent.Clear -> clearData()
-            is DialysisEvent.Back -> onNavigateEvent(NavigateEvent.ToPrevious)
             is DialysisEvent.Edit -> getDialysisEntry(event.value)
             is DialysisEvent.Add -> newEntry()
-            is DialysisEvent.SignOut -> onNavigateEvent(NavigateEvent.ToSignIn)
             else -> return
         }
     }
 
     private fun newEntry() {
         clearData()
-        onNavigateEvent(NavigateEvent.ToDialysisEntryScreen)
     }
 
     private fun getEntries(){
@@ -120,7 +115,6 @@ class DialysisViewModel(
                 _state.value.session.groupId
             )
             clearData()
-            onNavigateEvent(NavigateEvent.ToPrevious)
         }
     }
 
@@ -136,13 +130,12 @@ class DialysisViewModel(
                 weightAfter = _state.value.weightAfter,
                 weightBefore = _state.value.weightBefore,
                 ultraFiltration = _state.value.ultrafiltration,
-                program =  _state.value.programs.first { program ->
+                program =  _state.value.programs.firstOrNull { program ->
                     program.name == _state.value.selectedProgram
                 }
             )
             repository.addEntry(entry, _state.value.session.groupId)
             clearData()
-            onNavigateEvent(NavigateEvent.ToPrevious)
         }
     }
 
@@ -170,12 +163,11 @@ class DialysisViewModel(
                   it.copy(
                       itemKey = dialysisEntry.key,
                       weightBefore = dialysisEntry.weightBefore,
-                      weightAfter = dialysisEntry.weightBefore,
+                      weightAfter = dialysisEntry.weightAfter,
                       ultrafiltration = dialysisEntry.ultraFiltration,
-                      selectedProgram = dialysisEntry.program!!.name
+                      selectedProgram = dialysisEntry.program?.name ?: ""
                   )
                 }
-                onNavigateEvent(NavigateEvent.ToDialysisEntryScreen)
             }
         }
     }

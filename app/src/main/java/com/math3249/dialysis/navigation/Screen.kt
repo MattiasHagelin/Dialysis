@@ -15,6 +15,7 @@ sealed class Screen(val route: String) {
     data object MedicationScreen: Screen("medication")
     data object MedicationOverview: Screen("medication_overview")
     data object MedicationSaveScreen: Screen("save_medication")
+    data object MedicationPaused: Screen("pause_medication")
     data object BloodPressureScreen: Screen("blood_pressure")
     data object BloodPressureOverview: Screen("blood_pressure_overview")
 }
