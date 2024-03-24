@@ -74,7 +74,7 @@
     <string name="dont_take_with_food">Tas utan mat</string>
     <string name="medication_comment">Kommentar</string>
     <string name="strength">Styrka</string>
-    <string name="recurrence">Upprepas</string>
+    <string name="recurrence">Återkommande</string>
     <string name="time">Tid</string>
     <string name="start_date">Startdatum</string>
     <string name="unit">Enhet</string>
@@ -83,4 +83,26 @@
     <string name="breakfast">Frukost</string>
     <string name="lunch">Lunch</string>
     <string name="dinner">Middag</string>
+    <string-array name="dose_units">
+        <item>g</item>
+        <item>ml</item>
+        <item>tablett</item>
+        <item>dospåse</item>
+        <item>droppar</item>
+    </string-array>
+
+    <string-array name="recurrence_interval">
+        <item>4 timmar</item>
+        <item>6 timmar</item>
+        <item>8 timmar</item>
+        <item>12 timmar</item>
+        <item>24 timmar</item>
+        <item>Anpassad…</item>
+    </string-array>
+
+    <string-array name="update_recurrence_options">
+        <item>Denna gång</item>
+        <item>Alla återkommande</item>
+    </string-array>
+    <string name="title_update_recurrence">Uppdatera återkommande</string>
 </resources>

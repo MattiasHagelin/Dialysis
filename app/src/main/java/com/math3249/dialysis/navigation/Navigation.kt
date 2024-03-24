@@ -104,8 +104,7 @@ fun Navigation(
                     navController = navController,
                     factory = viewModelFactory {
                         MedicationViewModel(
-                            repository = BaseApp.medicineModule.medicineRepository,
-                            sessionCache = BaseApp.sessionCache
+                            repository = BaseApp.medicineModule.medicineRepository
                         )
                     }
                 )
@@ -219,11 +218,15 @@ fun Navigation(
             route = Screen.BloodPressureScreen.route
         ) {
             composable(route = Screen.BloodPressureOverview.route) {
-                Button(onClick = { navController!!.navigate(Screen.StartScreen.route) {
-                    popUpTo(navController.graph.id) {
-                        inclusive = true
+                Button(
+                    onClick = {
+                        navController!!.navigate(Screen.StartScreen.route) {
+                            popUpTo(navController.graph.id) {
+                                inclusive = true
+                            }
+                        }
                     }
-                } }) {
+                ) {
 
                 }
             }

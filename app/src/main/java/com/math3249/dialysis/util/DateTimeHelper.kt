@@ -36,6 +36,17 @@ class DateTimeHelper {
             }
         }
 
+        fun isToday(date: String?): Boolean {
+            return if (date == null) {
+                false
+            } else {
+                DateTimeFormatter
+                    .ofPattern(Constants.DATE_PATTERN)
+                    .format(LocalDateTime.now()) ==
+                        formatIsoDateTimeString(date, Constants.DATE_PATTERN)
+            }
+        }
+
         fun localTimeOfSecondsOfDayOrNull(value: Int): LocalTime? {
             return try {
                 LocalTime.ofSecondOfDay(value.toLong())

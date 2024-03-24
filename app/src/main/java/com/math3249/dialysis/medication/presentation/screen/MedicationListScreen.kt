@@ -1,8 +1,11 @@
 package com.math3249.dialysis.medication.presentation.screen
 
-import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +16,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.KeyboardArrowDown
+import androidx.compose.material.icons.outlined.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Logout
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material.icons.outlined.Pause
@@ -20,13 +25,19 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -43,6 +54,7 @@ import com.math3249.dialysis.ui.components.DialysisAppBar
 import com.math3249.dialysis.ui.components.DialysisDropDownMenu
 import com.math3249.dialysis.ui.components.model.MenuItemData
 import com.math3249.dialysis.util.DateTimeHelper
+import com.math3249.dialysis.util.styling
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -52,9 +64,13 @@ fun MedicationListScreen(
     onEvent: (MedicationEvent) -> Unit,
     onNavigate: (NavigateEvent) -> Unit
 ) {
+    var show by remember {
+        mutableStateOf(false)
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(Color.Black)
     ) {
         DialysisAppBar(
             canNavigateBack = true,
@@ -76,7 +92,11 @@ fun MedicationListScreen(
                 )
             }
         )
-        LazyColumn() {
+        LazyColumn(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.secondaryContainer)
+                .padding(5.dp)
+        ) {
             state.medications.forEach { category ->
                 stickyHeader {
                     CategoryHeader( if (DateTimeHelper.localTimeOfSecondsOfDayOrNull(category.nameAsInt) == null){
@@ -86,6 +106,10 @@ fun MedicationListScreen(
                             .ofPattern(Constants.TIME_24_H)
                             .format(DateTimeHelper.localTimeOfSecondsOfDayOrNull(category.nameAsInt))
                     })
+                    Divider(
+                        thickness = 2.dp,
+                        color = MaterialTheme.colorScheme.secondaryContainer
+                    )
                 }
                 items(category.items) { item ->
                     MedicationCard(
@@ -93,9 +117,70 @@ fun MedicationListScreen(
                         onEvent = onEvent,
                         onNavigate = onNavigate
                     )
+
+                    Divider(
+                        thickness = 2.dp,
+                        color = MaterialTheme.colorScheme.secondaryContainer
+                    )
+                }
+            }
+            item {
+                Box (
+                    modifier = Modifier
+                        .height(50.dp)
+                        .fillMaxWidth()
+                        .clickable { show = !show }
+                        .padding(horizontal = 15.dp)
+                ){
+                    Text(
+                        text = "Given medications",
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                    )
+                    Icon(
+                        imageVector = if (show){
+                            Icons.Outlined.KeyboardArrowUp
+                        } else {
+                            Icons.Outlined.KeyboardArrowDown
+                        },
+                        contentDescription = null,
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                    )
+                }
+            }
+            state.completedMedications.forEach { category ->
+                stickyHeader {
+                    AnimatedVisibility(visible = show) {
+                        CategoryHeader( if (DateTimeHelper.localTimeOfSecondsOfDayOrNull(category.nameAsInt) == null){
+                            stringResource(category.nameAsInt)
+                        } else {
+                            DateTimeFormatter
+                                .ofPattern(Constants.TIME_24_H)
+                                .format(DateTimeHelper.localTimeOfSecondsOfDayOrNull(category.nameAsInt))
+                        })
+                        Divider(
+                            thickness = 2.dp,
+                            color = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    }
+                }
+                items(category.items) { item ->
+                    AnimatedVisibility(visible = show) {
+                        CompletedMedicationCard(
+                            data = item,
+                            onEvent = onEvent,
+                            onNavigate = onNavigate
+                        )
+                        Divider(
+                            thickness = 2.dp,
+                            color = MaterialTheme.colorScheme.secondaryContainer
+                        )
+                    }
                 }
             }
         }
+
     }
 }
 
@@ -106,11 +191,9 @@ fun MedicationCard(
     onEvent: (MedicationEvent) -> Unit,
     onNavigate: (NavigateEvent) -> Unit
 ) {
-    val context = LocalContext.current
-    val pauseMessage = stringResource(R.string.pause_message, data.name)
     Row  (
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
+        modifier = styling()
             .combinedClickable(
                 onClick = {
                     onEvent(MedicationEvent.Completed(data))
@@ -119,19 +202,17 @@ fun MedicationCard(
                     onEvent(MedicationEvent.Edit(data))
                     onNavigate(NavigateEvent.ToMedicationSaveScreen)
                 },
-                onDoubleClick = {
-                    Toast
-                        .makeText(
-                            context,
-                            pauseMessage,
-                            Toast.LENGTH_LONG
-                        )
-                        .show()
+//                onDoubleClick = {
+//                    Toast
+//                        .makeText(
+//                            context,
+//                            pauseMessage,
+//                            Toast.LENGTH_LONG
+//                        )
+//                        .show()
 //                    onEvent(MedicationEvent.TogglePause(data))
-                }
+//                }
             )
-            .height(50.dp)
-            .fillMaxWidth()
     ){
         Text(
             text = data.name,
@@ -148,28 +229,48 @@ fun MedicationCard(
             modifier = Modifier
                 .padding(start = 10.dp)
         )
-//        Box (
-//            modifier = Modifier
-//                .background(
-//                    MaterialTheme.colorScheme.background,
-//                )
-//                .shadow(2.dp)
-////                    .padding(10.dp)
-//                .fillMaxWidth()
-//        ){
-//            Row {
-//
-//            }
-//
-//        }
     }
-    Divider(
-        thickness = 1.dp,
-        color = Color.LightGray,
-        modifier = Modifier
-            .padding(horizontal = 15.dp)
-    )
-//    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun CompletedMedicationCard(
+    data: Medication,
+    onEvent: (MedicationEvent) -> Unit,
+    onNavigate: (NavigateEvent) -> Unit
+) {
+    Row  (
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = styling()
+            .combinedClickable(
+                onClick = {
+                    onEvent(MedicationEvent.UndoCompleted(data))
+                },
+                onLongClick = {
+                    onEvent(MedicationEvent.Edit(data))
+                    onNavigate(NavigateEvent.ToMedicationSaveScreen)
+                }
+            )
+    ){
+        Text(
+            text = data.name,
+            style = TextStyle(textDecoration = TextDecoration.LineThrough),
+            modifier = Modifier
+                .padding(start = 10.dp)
+        )
+        Text(
+            text = data.dose,
+            style = TextStyle(textDecoration = TextDecoration.LineThrough),
+            modifier = Modifier
+                .padding(start = 10.dp)
+        )
+        Text(
+            text = data.unit,
+            style = TextStyle(textDecoration = TextDecoration.LineThrough),
+            modifier = Modifier
+                .padding(start = 10.dp)
+        )
+    }
 }
 
 @Composable

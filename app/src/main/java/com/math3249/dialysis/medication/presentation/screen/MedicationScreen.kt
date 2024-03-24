@@ -23,6 +23,10 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -43,11 +47,13 @@ import com.math3249.dialysis.ui.components.DialysisAppBar
 import com.math3249.dialysis.ui.components.ExposedDropdownMenu
 import com.math3249.dialysis.ui.components.LabeledCheckbox
 import com.math3249.dialysis.ui.components.NumberField
+import com.math3249.dialysis.util.textFieldColors
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.listItemsSingleChoice
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
+import com.vanpra.composematerialdialogs.title
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -61,6 +67,9 @@ fun MedicationScreen(
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
     val recurrenceDialogState = rememberMaterialDialogState()
+    val updateDialogState = rememberMaterialDialogState()
+    val deleteDialogState = rememberMaterialDialogState()
+
     Column (
         horizontalAlignment = Alignment.Start,
         modifier = Modifier
@@ -83,7 +92,7 @@ fun MedicationScreen(
                 if (state.medication.key != "") {
                     val context = LocalContext.current
                     val pauseMessage = stringResource(R.string.pause_message, state.medication.name)
-                    IconButton(onClick = { /*TODO*/ }) {
+                    IconButton(onClick = { deleteDialogState.show() }) {
                         Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
                     }
                     IconButton(onClick = {
@@ -103,10 +112,11 @@ fun MedicationScreen(
                 }
                 IconButton(onClick = {
                     if (state.medication.key != "")
-                        onEvent(MedicationEvent.UpdateMedication)
-                    else
+                        updateDialogState.show()
+                    else {
                         onEvent(MedicationEvent.CreateMedication)
-                    onNavigateEvent(NavigateEvent.ToPrevious(Screen.MedicationOverview.route))
+                        onNavigateEvent(NavigateEvent.ToPrevious(Screen.MedicationOverview.route))
+                    }
                 }) {
                     Icon(imageVector = Icons.Outlined.Save, contentDescription = null)
                 }
@@ -153,7 +163,7 @@ fun MedicationScreen(
                     .weight(0.5f)
             )
             ExposedDropdownMenu(
-                value = state.selectedUnit,
+                value = state.medication.unit,
                 label = stringResource(R.string.unit),
                 items = listOf {expanded ->
                     stringArrayResource(R.array.dose_units).forEach {item ->
@@ -162,7 +172,11 @@ fun MedicationScreen(
                                 Text(item)
                             },
                             onClick = {
-                                onEvent(MedicationEvent.UpdateSelectedUnit(item))
+                                onEvent(MedicationEvent
+                                    .UpdateMedicationState(
+                                        state.medication.copy(unit = item)
+                                    )
+                                )
                                 expanded.value = false
                             }
                         )
@@ -180,20 +194,7 @@ fun MedicationScreen(
                     .format(state.startDate),
                 onValueChange = {},
                 singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    focusedContainerColor = MaterialTheme.colorScheme.background,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    //For Icons
-                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
+                colors = textFieldColors(),
                 readOnly = true,
                 enabled = false,
                 label = {
@@ -217,25 +218,10 @@ fun MedicationScreen(
                     }
             )
             TextField(
-                value = DateTimeFormatter
-                    .ofPattern(Constants.TIME_24_H)
-                    .format(state.time),
+                value = state.medication.time,
                 onValueChange = {},
                 singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    focusedContainerColor = MaterialTheme.colorScheme.background,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    //For Icons
-                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
+                colors = textFieldColors(),
                 readOnly = true,
                 enabled = false,
                 label = {
@@ -264,20 +250,7 @@ fun MedicationScreen(
                 value = state.medication.recurrence,
                 onValueChange = {},
                 singleLine = true,
-                colors = TextFieldDefaults.colors(
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    focusedContainerColor = MaterialTheme.colorScheme.background,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
-                    disabledContainerColor = MaterialTheme.colorScheme.background,
-                    focusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unfocusedIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledIndicatorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    //For Icons
-                    disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    disabledTrailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
+                colors = textFieldColors(),
                 readOnly = true,
                 enabled = false,
                 label = {
@@ -300,24 +273,6 @@ fun MedicationScreen(
                         recurrenceDialogState.show()
                     }
             )
-//            TextField(
-//                value = state.recurrence,
-//                onValueChange = {
-//                    onEvent(MedicationEvent.UpdateRecurrence(it))
-//                },
-//                singleLine = true,
-//                colors = TextFieldDefaults.colors(
-//                    focusedContainerColor = MaterialTheme.colorScheme.background,
-//                    unfocusedContainerColor = MaterialTheme.colorScheme.background,
-//                    disabledContainerColor = MaterialTheme.colorScheme.background
-//                ),
-//                label = {
-//                    Text(stringResource(R.string.recurrence))
-//                },
-//                modifier = Modifier
-//                    .padding(horizontal = 15.dp)
-//                    .weight(1f)
-//            )
         }
         Row {
             NumberField(
@@ -427,7 +382,14 @@ fun MedicationScreen(
             initialDate = LocalDate.now(),
             title = "Start date",
         ) {
-            onEvent(MedicationEvent.UpdateStartDate(it))
+            onEvent(MedicationEvent
+                .UpdateMedicationState(
+                    state.medication.copy(startDate = DateTimeFormatter
+                        .ofPattern(Constants.DATE_PATTERN)
+                        .format(it)
+                    )
+                )
+            )
         }
     }
 
@@ -444,7 +406,14 @@ fun MedicationScreen(
             is24HourClock = true
 
         ){
-            onEvent(MedicationEvent.UpdateTime(it))
+            onEvent(MedicationEvent
+                .UpdateMedicationState(
+                    state.medication.copy(time = DateTimeFormatter
+                        .ofPattern(Constants.TIME_24_H)
+                        .format(it)
+                    )
+                )
+            )
         }
     }
     val recurrenceOptions = stringArrayResource(R.array.recurrence_interval).toList()
@@ -463,6 +432,60 @@ fun MedicationScreen(
                 recurrenceDialogState.hide()
             },
             waitForPositiveButton = false
+        )
+    }
+    val updateRecurrenceOptions = stringArrayResource(R.array.update_recurrence_options).toList()
+    var selectedMethod by remember {
+        mutableIntStateOf(0)
+    }
+    MaterialDialog (
+        dialogState = updateDialogState,
+        buttons = {
+            positiveButton(
+                text = stringResource(R.string.update),
+                onClick = {
+                    onEvent(MedicationEvent.UpdateMedicationMethod(selectedMethod))
+                    onNavigateEvent(NavigateEvent.ToPrevious(Screen.MedicationOverview.route))
+                }
+            )
+            negativeButton(text = stringResource(R.string.cancel))
+        }
+    ) {
+        this.title(
+            text = stringResource(R.string.title_update_recurrence)
+        )
+        this.listItemsSingleChoice(
+            list = updateRecurrenceOptions,
+            initialSelection = 0,
+            onChoiceChange = {
+                selectedMethod = it
+            },
+            waitForPositiveButton = true
+        )
+    }
+    MaterialDialog (
+        dialogState = deleteDialogState,
+        buttons = {
+            positiveButton(
+                text = stringResource(R.string.delete),
+                onClick = {
+                    onEvent(MedicationEvent.RemoveMedicationMethod(selectedMethod))
+                    onNavigateEvent(NavigateEvent.ToPrevious(Screen.MedicationOverview.route))
+                }
+            )
+            negativeButton(text = stringResource(R.string.cancel))
+        }
+    ) {
+        this.title(
+            text = stringResource(R.string.title_remove_recurrence)
+        )
+        this.listItemsSingleChoice(
+            list = updateRecurrenceOptions,
+            initialSelection = 0,
+            onChoiceChange = {
+                selectedMethod = it
+            },
+            waitForPositiveButton = true
         )
     }
 }

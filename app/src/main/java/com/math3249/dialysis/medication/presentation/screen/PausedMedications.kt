@@ -88,7 +88,7 @@ fun PausedMedications(
                                 onEvent(MedicationEvent.TogglePause(medication))
                             },
                             onLongClick = {
-                                onEvent(MedicationEvent.RemoveMedication(medication.key))
+//                                onEvent(MedicationEvent.RemoveMedicationMethod(medication.key))
                             }
                         )
                         .fillMaxWidth()

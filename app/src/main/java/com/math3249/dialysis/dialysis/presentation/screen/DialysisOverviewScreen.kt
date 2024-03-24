@@ -109,10 +109,9 @@ fun DialysisOverviewScreen(
                             deleteDialogState.show()
                         },
                         modifier = Modifier
-                            .padding(start = 5.dp, top = 2.dp, end = 5.dp)
-                            .shadow(10.dp, RoundedCornerShape(8.dp))
+                            .padding(2.dp)
+                            .shadow(1.dp, RoundedCornerShape(2.dp))
                             .background(Color.White)
-
                     )
                 }
             }
