@@ -105,6 +105,10 @@
     <string name="dinner">Dinner</string>
     <string name="title_update_recurrence">Update recurrent medication</string>
     <string name="title_remove_recurrence">Delete recurrent medication</string>
+    <string name="channel_description">Used for notifing medication times.</string>
+    <string name="medication_time">%1$s medication</string>
+    <string name="medication_text">Time to take medication.</string>
+    <string name="given_medications">Given medications</string>
 
     <string-array name="dose_units">
         <item>g</item>

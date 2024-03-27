@@ -1,6 +1,7 @@
 package com.math3249.dialysis.util
 
 import com.math3249.dialysis.other.Constants
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -9,6 +10,13 @@ import java.time.temporal.TemporalAccessor
 class DateTimeHelper {
 
     companion object {
+        fun dateTimeFromTimeString(time: String): LocalDateTime {
+            var ldt = LocalDateTime.of(LocalDate.now(), LocalTime.parse(time))
+            val now = LocalDateTime.now()
+            if (now >= ldt)
+                ldt = ldt.plusDays(1)
+            return ldt
+        }
         fun formatIsoDateTimeString(isoDateTime: String, pattern: String): String {
             return DateTimeFormatter
                 .ofPattern(pattern)

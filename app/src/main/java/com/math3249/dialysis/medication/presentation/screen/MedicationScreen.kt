@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
 import com.math3249.dialysis.R
 import com.math3249.dialysis.medication.data.Medication
-import com.math3249.dialysis.medication.domain.MedicationEvent
+import com.math3249.dialysis.medication.data.MedicationEvent
 import com.math3249.dialysis.medication.presentation.MedicationUiState
 import com.math3249.dialysis.navigation.NavigateEvent
 import com.math3249.dialysis.navigation.Screen
@@ -172,7 +172,8 @@ fun MedicationScreen(
                                 Text(item)
                             },
                             onClick = {
-                                onEvent(MedicationEvent
+                                onEvent(
+                                    MedicationEvent
                                     .UpdateMedicationState(
                                         state.medication.copy(unit = item)
                                     )
@@ -189,9 +190,7 @@ fun MedicationScreen(
         }
         Row {
             TextField(
-                value = DateTimeFormatter
-                    .ofPattern(Constants.DATE_PATTERN)
-                    .format(state.startDate),
+                value = state.medication.startDate,
                 onValueChange = {},
                 singleLine = true,
                 colors = textFieldColors(),
@@ -379,10 +378,15 @@ fun MedicationScreen(
         }
     ){
         this.datepicker(
-            initialDate = LocalDate.now(),
+            initialDate = LocalDate.from(
+                DateTimeFormatter
+                    .ofPattern(Constants.DATE_PATTERN)
+                    .parse(state.medication.startDate)
+            ),
             title = "Start date",
         ) {
-            onEvent(MedicationEvent
+            onEvent(
+                MedicationEvent
                 .UpdateMedicationState(
                     state.medication.copy(startDate = DateTimeFormatter
                         .ofPattern(Constants.DATE_PATTERN)
@@ -401,12 +405,13 @@ fun MedicationScreen(
         }
     ){
         this.timepicker(
-            initialTime = LocalTime.now(),
+            initialTime = LocalTime.parse(state.medication.time),
             title = "Time",
             is24HourClock = true
 
         ){
-            onEvent(MedicationEvent
+            onEvent(
+                MedicationEvent
                 .UpdateMedicationState(
                     state.medication.copy(time = DateTimeFormatter
                         .ofPattern(Constants.TIME_24_H)

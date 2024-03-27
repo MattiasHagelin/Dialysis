@@ -1,6 +1,4 @@
-package com.math3249.dialysis.medication.domain
-
-import com.math3249.dialysis.medication.data.Medication
+package com.math3249.dialysis.medication.data
 
 sealed class MedicationEvent {
     data object Clear: MedicationEvent()

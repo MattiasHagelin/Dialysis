@@ -1,7 +1,6 @@
-package com.math3249.dialysis.medication.domain
+package com.math3249.dialysis.medication.data
 
 import com.math3249.dialysis.R
-import com.math3249.dialysis.medication.data.Medication
 import com.math3249.dialysis.other.Constants
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -22,17 +21,6 @@ class RecurrenceHelper {
         }
     }
 
-    fun takeWithFoodRecurrences(medication: Medication): Int {
-        var count = 0
-        if (medication.withBreakfast)
-            count++
-        if (medication.withLunch)
-            count++
-        if (medication.withDinner)
-            count++
-        return count
-    }
-
     fun whichMeals(medication: Medication): MutableList<Meals> {
         val list = mutableListOf<Meals>()
         if (medication.withBreakfast)
@@ -42,15 +30,6 @@ class RecurrenceHelper {
         if (medication.withDinner)
             list.add(Meals.DINNER)
         return list
-    }
-
-    fun takeWithFoodCategory(medication: Medication): Int {
-        return if (medication.withBreakfast)
-            R.string.breakfast
-        else if (medication.withLunch)
-            R.string.lunch
-        else
-            R.string.dinner
     }
     fun recalculateRecurrence(medication: Medication): MutableList<LocalTime>  {
         val newTimes = mutableListOf<LocalTime>()
@@ -74,7 +53,7 @@ class RecurrenceHelper {
     fun createMedicationForEveryRecurrenceOver24Hours(medication: Medication): List<Medication> {
         val list = mutableListOf<Medication>()
         val uuid = UUID.randomUUID().toString()
-        if (medication.takeWithFood) {
+        if (medication.withBreakfast || medication.withLunch || medication.withDinner) {
             withFoodRecurrence(medication.copy(recurrenceId = uuid), list)
         } else {
             list.add(medication

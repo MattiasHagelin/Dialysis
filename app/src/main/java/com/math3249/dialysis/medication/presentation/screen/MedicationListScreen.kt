@@ -34,7 +34,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextDecoration
@@ -44,7 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.rememberNavController
 import com.math3249.dialysis.R
 import com.math3249.dialysis.medication.data.Medication
-import com.math3249.dialysis.medication.domain.MedicationEvent
+import com.math3249.dialysis.medication.data.MedicationEvent
 import com.math3249.dialysis.medication.presentation.MedicationUiState
 import com.math3249.dialysis.navigation.NavigateEvent
 import com.math3249.dialysis.navigation.Screen
@@ -70,7 +69,7 @@ fun MedicationListScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(MaterialTheme.colorScheme.secondaryContainer)
     ) {
         DialysisAppBar(
             canNavigateBack = true,
@@ -133,7 +132,7 @@ fun MedicationListScreen(
                         .padding(horizontal = 15.dp)
                 ){
                     Text(
-                        text = "Given medications",
+                        text = stringResource(R.string.given_medications),
                         modifier = Modifier
                             .align(Alignment.CenterStart)
                     )

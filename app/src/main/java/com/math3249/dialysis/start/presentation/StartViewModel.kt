@@ -1,17 +1,26 @@
 package com.math3249.dialysis.start.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.math3249.dialysis.BaseApp
 import com.math3249.dialysis.navigation.NavigateEvent
 import com.math3249.dialysis.start.domain.StartEvent
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class StartViewModel(
     val onNavigateEvent: (NavigateEvent) -> Unit
 ): ViewModel() {
     private val _state = MutableStateFlow(StartUiState())
     val state = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            BaseApp.medicationScheduler.autoSchedule()
+        }
+    }
     fun onEvent(event: StartEvent) {
         when (event) {
             is StartEvent.SignOut -> onNavigateEvent(NavigateEvent.ToSignIn)

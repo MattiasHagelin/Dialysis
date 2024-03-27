@@ -1,5 +1,9 @@
 package com.math3249.dialysis.medication.data
 
+import com.math3249.dialysis.other.Constants
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
 data class Medication(
     val key: String = "",
     val category: Int = 0,
@@ -11,7 +15,7 @@ data class Medication(
     val strength: String = "",
     val unit: String = "",
     val lastCompleted: String? = null,
-    val startDate: String = "01-01-2000",
+    val startDate: String = DateTimeFormatter.ofPattern(Constants.DATE_PATTERN).format(LocalDate.now()),
     val paused: Boolean = false,
     val takeWithFood: Boolean = false,
     val withBreakfast: Boolean = false,

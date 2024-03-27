@@ -65,16 +65,17 @@ class Navigator(
     }
 
     private fun toPrevious(route: String) {
-        if (route == Screen.StartScreen.route) {
-            toStart()
-        } else {
-            navController.navigate(route) {
-                popUpTo(navController.graph.startDestinationId) {
-                    saveState = true
-                }
-                launchSingleTop = true
-                restoreState = true
-            }
-        }
+        navController.popBackStack()
+//        if (route == Screen.StartScreen.route) {
+//            toStart()
+//        } else {
+//            navController.navigate(route) {
+//                popUpTo(navController.graph.startDestinationId) {
+//                    saveState = true
+//                }
+//                launchSingleTop = true
+//                restoreState = true
+//            }
+//        }
     }
 }

@@ -15,7 +15,7 @@ class MedicationModule(
     override val database: FirebaseDatabase by lazy {
         Firebase.database(Constants.DATABASE_BASE_URL)
     }
-    override val medicineRepository: IMedication by lazy {
+    override val medicationRepository: IMedication by lazy {
         MedicationsRepository(
             database,
             SessionCache(appContext.getSharedPreferences(Constants.SESSION, Context.MODE_PRIVATE))

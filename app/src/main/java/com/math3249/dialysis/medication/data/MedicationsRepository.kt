@@ -5,8 +5,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.math3249.dialysis.medication.domain.Meals
-import com.math3249.dialysis.medication.domain.RecurrenceHelper
 import com.math3249.dialysis.other.Constants
 import com.math3249.dialysis.session.ISessionCache
 import com.math3249.dialysis.session.Session

@@ -104,7 +104,7 @@ fun Navigation(
                     navController = navController,
                     factory = viewModelFactory {
                         MedicationViewModel(
-                            repository = BaseApp.medicineModule.medicineRepository
+                            repository = BaseApp.medicationModule.medicationRepository
                         )
                     }
                 )

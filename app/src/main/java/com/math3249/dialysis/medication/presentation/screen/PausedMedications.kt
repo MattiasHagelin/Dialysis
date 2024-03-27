@@ -28,11 +28,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.math3249.dialysis.R
-import com.math3249.dialysis.medication.domain.MedicationEvent
+import com.math3249.dialysis.medication.data.MedicationEvent
 import com.math3249.dialysis.medication.presentation.MedicationUiState
 import com.math3249.dialysis.navigation.NavigateEvent
 import com.math3249.dialysis.navigation.Screen
 import com.math3249.dialysis.ui.components.DialysisAppBar
+import com.math3249.dialysis.util.styling
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -98,8 +99,7 @@ fun PausedMedications(
                     Text(
                         text = medication.name,
                         fontSize = 24.sp,
-                        modifier = Modifier
-                            .padding(horizontal = 15.dp)
+                        modifier = styling()
                     )
                 }
                 Divider(

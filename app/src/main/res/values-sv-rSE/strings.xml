@@ -105,4 +105,9 @@
         <item>Alla återkommande</item>
     </string-array>
     <string name="title_update_recurrence">Uppdatera återkommande</string>
+    <string name="title_remove_recurrence">Ta bort återkommande medicin</string>
+    <string name="channel_description">Används för notifiering av medicintid.</string>
+    <string name="medication_time">%1$s mediciner</string>
+    <string name="medication_text">Dags att ta medicin.</string>
+    <string name="given_medications">Givna mediciner</string>
 </resources>

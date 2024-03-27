@@ -5,5 +5,5 @@ import com.math3249.dialysis.medication.data.IMedication
 
 interface IMedicationModule {
     val database: FirebaseDatabase
-    val medicineRepository: IMedication
+    val medicationRepository: IMedication
 }

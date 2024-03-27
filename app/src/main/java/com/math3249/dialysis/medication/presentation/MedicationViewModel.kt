@@ -4,18 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.math3249.dialysis.medication.data.IMedication
 import com.math3249.dialysis.medication.data.Medication
-import com.math3249.dialysis.medication.domain.MedicationEvent
-import com.math3249.dialysis.other.Constants
+import com.math3249.dialysis.medication.data.MedicationEvent
 import com.math3249.dialysis.ui.components.model.Category
 import com.math3249.dialysis.util.DateTimeHelper
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 
 class MedicationViewModel(
     private val repository: IMedication
@@ -35,8 +31,6 @@ class MedicationViewModel(
         when(event) {
             is MedicationEvent.UpdateMedication -> updateMedication()
             is MedicationEvent.UpdateMedicationState -> {
-
-                val value = event.value.time
                 _state.update {
                     it.copy(medication = event.value)
                 }
@@ -110,6 +104,7 @@ class MedicationViewModel(
                         getCompletedMedications(medications)
                         getPausedMedications(medications)
                         _medications.value = medications
+//                        createNotifications()
                     }
                     result.isFailure -> {
                         result.exceptionOrNull()?.printStackTrace()
@@ -179,15 +174,14 @@ class MedicationViewModel(
 
     private fun prepareEditState(medication: Medication) {
         _state.update { it.copy(
-            medication = medication,
+            medication = medication/*,
             time = LocalTime.parse(medication.time),
             startDate = LocalDate.from(
                 DateTimeFormatter
                     .ofPattern(Constants.DATE_PATTERN)
                     .parse(medication.startDate)
             ),
-            selectedUnit = medication.unit
-
+            selectedUnit = medication.unit*/
         ) }
     }
     private fun clearMedicationSate() {
